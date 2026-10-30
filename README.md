@@ -6,10 +6,34 @@ Minimal release banners made from your own transparent renders: a dark backgroun
 palette-coloured italic edition title, matched quotation marks and a character image.
 Includes one-command PNG export, future-concept batches and a resolved JSON recipe.
 
-**Current scope:** a Windows PowerShell/System.Drawing compositor for existing
-PNG renders. No extra packages, network calls, AI generation or original modkit
-installation required. This repository does not yet include a model renderer or
-game adapter. The default demo is an original geometric prism.
+**Current scope:** a browser Banner Lab for local PNG/JPEG sheets and a standalone
+Windows PowerShell/System.Drawing compositor. Both export 1500 x 500 banners.
+No AI generation, model renderer, game adapter or original modkit installation is
+required. The examples are original geometric artwork.
+
+## Banner Lab
+
+The browser lab starts in a light **Simple View**: open a PNG/JPEG, let it suggest
+sprite crops, pick a subject, edit your text/colour and download. Its two tabs are
+Create and Batch. **Advanced View** preserves your project and reveals exact crop
+rectangles, draggable guides, layered parts assemblies, three layouts, palettes,
+matched quotes, seeded randomization and single PNG or batch ZIP downloads.
+Recipes preserve settings and check the original images when reopened. Images stay
+on the visitor's device; the app has no uploads, analytics or external font calls.
+Detection handles transparent sheets and common flat/printed backgrounds, with
+manual corrections available. It suggests cuts without removing backgrounds.
+
+Preview the implementation locally:
+
+```text
+node tools/build-web.mjs
+python tools/serve-web.py
+```
+
+Open <http://127.0.0.1:8765/>. For visitors, the intended distribution is GitHub
+Pages with no installation; the Pages workflow is prepared but has not yet been
+deployed. See [usage, checks and deployment](docs/BANNER-LAB.md) and the
+[implementation checklist](docs/PAGES-DEMO-PLAN.md).
 
 ## Give this to your coding bot
 
@@ -53,7 +77,7 @@ For the same typography across machines, use the same Windows fonts. Each recipe
 records the selected quote style, caption, palette, font, dimensions and input
 image SHA256. It contains only the input basename, not a private absolute path.
 To reproduce a banner, supply the recorded values and the same image/font setup;
-automatic recipe replay is not implemented yet.
+automatic CLI recipe replay is not implemented yet.
 
 ## Connect your game
 
@@ -76,5 +100,7 @@ The checks generate all quote styles and a batch, inspect PNG dimensions and JSO
 recipes, and confirm overwrite refusal. Visual checks remain separate. The original
 demo can be recreated with `examples/make-demo.ps1` when its PNG is absent.
 
-Original code, documentation and synthetic demo are dedicated under
-[CC0 1.0 Universal](LICENSE). Third-party inputs retain their own terms.
+Original code, documentation and synthetic demos are dedicated under
+[CC0 1.0 Universal](LICENSE). Bundled fonts use SIL OFL 1.1 and fflate uses MIT;
+see [asset provenance and licences](web/assets/README.md).
+Third-party inputs retain their own terms.

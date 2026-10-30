@@ -1,3 +1,7 @@
 build/
 private/
 *.local.json
+node_modules/
+site/dist/
+test-results/
+playwright-report/

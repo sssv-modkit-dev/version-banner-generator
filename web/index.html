@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Turn your sprite sheets into release banners. Cut, compose, randomize and export in your browser. Your images stay on your device."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Banner Lab · version-banner-generator</title>
+    <link rel="icon" href="./assets/mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.mjs"></script>
+  </head>
+  <body data-view="simple" data-simple-tab="create">
+    <header class="masthead">
+      <a class="brand" href="./"
+        ><img src="./assets/mark.svg" alt="" width="32" height="32" /><span
+          >BANNER <b>LAB</b><small>FROM SHEET TO RELEASE</small></span
+        ></a
+      >
+      <div class="header-note">
+        <span class="dot"></span> Local files. All yours.
+      </div>
+      <div class="header-actions">
+        <div class="view-switch" aria-label="Editor complexity">
+          <button id="simple-view" aria-pressed="true">Simple</button
+          ><button id="advanced-view" aria-pressed="false">Advanced</button>
+        </div>
+        <button id="demo">Try demo</button
+        ><label class="button advanced-only" for="recipe-file"
+          >Open recipe</label
+        ><input
+          id="recipe-file"
+          class="sr-only"
+          type="file"
+          accept=".json,application/json"
+        /><button id="reset" class="quiet">Reset</button>
+      </div>
+    </header>
+    <div class="intro">
+      <div>
+        <p class="eyebrow">A SMALL TOOL FOR YOUR NEXT BIG UPDATE</p>
+        <h1>Your sprites. <em>Your release.</em></h1>
+        <p>Cut a sheet, find a look, make one banner. Or a hundred.</p>
+      </div>
+      <a
+        class="source-link"
+        href="https://github.com/sssv-modkit-dev/version-banner-generator"
+        target="_blank"
+        rel="noopener"
+        >Source & documentation ↗</a
+      >
+    </div>
+    <main class="workspace">
+      <aside class="controls">
+        <nav class="steps" aria-label="Editor steps">
+          <button data-tab="create" aria-pressed="true">Create</button>
+          <button data-tab="sheet" aria-pressed="false" class="advanced-only">
+            <span>01</span> Sheet</button
+          ><button
+            data-tab="subject"
+            aria-pressed="false"
+            class="advanced-only"
+          >
+            <span>02</span> Subject</button
+          ><button data-tab="style" aria-pressed="false" class="advanced-only">
+            <span>03</span> Style</button
+          ><button data-tab="batch" aria-pressed="false">
+            <span>04</span> Batch
+          </button>
+        </nav>
+        <section data-panel="create">
+          <div class="quick-import">
+            <h2>Make it yours</h2>
+            <label class="dropzone" id="quick-dropzone" for="quick-file"
+              ><span class="upload-symbol">＋</span
+              ><strong>Open a sheet or image</strong
+              ><span>PNG or JPEG · stays on your device</span></label
+            ><input
+              id="quick-file"
+              class="sr-only"
+              type="file"
+              accept="image/png,image/jpeg"
+              multiple
+            />
+            <p class="hint" id="quick-source-info">
+              Try the demo, or bring your own artwork.
+            </p>
+            <p
+              class="detection-summary"
+              id="detection-summary"
+              role="status"
+            ></p>
+            <div class="button-row">
+              <button id="quick-detect">Find sprites again</button
+              ><button id="adjust-cuts">Adjust cuts ↗</button>
+            </div>
+          </div>
+          <div class="quick-settings">
+            <label
+              >Project<input
+                id="quick-project"
+                maxlength="120"
+                value="MY MODKIT"
+            /></label>
+            <label
+              >Release name<input
+                id="quick-name"
+                maxlength="160"
+                value="Ceruleanish Facet Prism"
+            /></label>
+            <label
+              >Version / subtitle<input
+                id="quick-version"
+                maxlength="100"
+                value="CONCEPT"
+            /></label>
+            <label
+              >Colour<select id="quick-palette">
+                <option value="blue">Glacier blue</option>
+                <option value="orange">Amber orange</option>
+                <option value="green">Jade green</option>
+              </select></label
+            >
+            <button id="quick-shuffle" class="wide">
+              Surprise me <span>↗</span>
+            </button>
+            <p class="hint">
+              Pick a sprite below the preview. Advanced View has exact cuts,
+              layers and all styling controls.
+            </p>
+          </div>
+        </section>
+        <section data-panel="sheet" hidden>
+          <div class="section-heading">
+            <h2>Start with a sheet</h2>
+            <span class="tag">PNG / JPEG</span>
+          </div>
+          <label class="dropzone" id="dropzone" for="image-file"
+            ><span class="upload-symbol">＋</span
+            ><strong>Open your image</strong
+            ><span>or drop PNG / JPEG here · up to 20 MB</span></label
+          ><input
+            id="image-file"
+            class="sr-only"
+            type="file"
+            accept="image/png,image/jpeg"
+            multiple
+          />
+          <label
+            >Active sheet<select
+              id="source-select"
+              aria-label="Active sheet"
+            ></select
+          ></label>
+          <p class="hint" id="source-info"></p>
+          <button id="auto-detect" class="wide">
+            Auto-detect cells <span>↗</span>
+          </button>
+          <p id="advanced-detection" class="hint"></p>
+          <label
+            >Cutting method<select id="cut-mode">
+              <option value="grid">Uniform grid</option>
+              <option value="cuts">Custom row / column guides</option>
+              <option value="rects">Free rectangles</option>
+            </select></label
+          >
+          <div id="grid-fields">
+            <div class="two">
+              <label
+                >Cell width<input
+                  id="cell-w"
+                  type="number"
+                  min="1"
+                  max="4096"
+                  value="240" /></label
+              ><label
+                >Cell height<input
+                  id="cell-h"
+                  type="number"
+                  min="1"
+                  max="4096"
+                  value="240"
+              /></label>
+            </div>
+            <div class="two">
+              <label
+                >Margin X<input
+                  id="margin-x"
+                  type="number"
+                  min="0"
+                  max="4096"
+                  value="0" /></label
+              ><label
+                >Margin Y<input
+                  id="margin-y"
+                  type="number"
+                  min="0"
+                  max="4096"
+                  value="0"
+              /></label>
+            </div>
+            <div class="two">
+              <label
+                >Gutter X<input
+                  id="gap-x"
+                  type="number"
+                  min="0"
+                  max="4096"
+                  value="0" /></label
+              ><label
+                >Gutter Y<input
+                  id="gap-y"
+                  type="number"
+                  min="0"
+                  max="4096"
+                  value="0"
+              /></label>
+            </div>
+            <div class="two">
+              <label
+                >Columns<input
+                  id="columns"
+                  type="number"
+                  min="1"
+                  max="128"
+                  value="3" /></label
+              ><label
+                >Rows<input id="rows" type="number" min="1" max="128" value="2"
+              /></label>
+            </div>
+            <button id="from-count" class="wide">Set size from counts</button>
+            <label class="check"
+              ><input id="partial" type="checkbox" />Include partial edge
+              cells</label
+            >
+          </div>
+          <div id="cut-fields" hidden>
+            <label
+              >Vertical lines · X pixels<input
+                id="cuts-x"
+                placeholder="240, 480"
+                value="240, 480" /></label
+            ><label
+              >Horizontal lines · Y pixels<input
+                id="cuts-y"
+                placeholder="240"
+                value="240"
+            /></label>
+            <p class="hint">
+              Comma-separated source pixels. Drag a line in the preview, or edit
+              its value here. Empty fields remove all guides.
+            </p>
+          </div>
+          <div id="rect-fields" hidden>
+            <p class="hint">
+              Drag a rectangle on the sheet. Select a region to move or resize
+              it. Use these fields for exact cuts.
+            </p>
+            <label>Region<select id="region-select"></select></label>
+            <div class="two">
+              <label
+                >X<input id="rect-x" type="number" min="0" value="0" /></label
+              ><label
+                >Y<input id="rect-y" type="number" min="0" value="0"
+              /></label>
+            </div>
+            <div class="two">
+              <label
+                >Width<input
+                  id="rect-w"
+                  type="number"
+                  min="1"
+                  value="100" /></label
+              ><label
+                >Height<input id="rect-h" type="number" min="1" value="100"
+              /></label>
+            </div>
+            <div class="button-row">
+              <button id="update-rect">Update region</button
+              ><button id="delete-rect">Remove</button>
+            </div>
+          </div>
+          <label class="check"
+            ><input id="skip-empty" type="checkbox" checked />Skip fully
+            transparent cells</label
+          ><label class="check"
+            ><input id="trim" type="checkbox" checked />Trim transparent
+            edges</label
+          >
+          <button id="apply-cuts" class="primary wide">
+            Apply cuts <span>→</span>
+          </button>
+          <div class="button-row">
+            <button id="undo" disabled>Undo cuts</button
+            ><button id="redo" disabled>Redo</button>
+          </div>
+          <p class="hint">
+            Images are read on this device. No uploads, accounts or saved
+            browser copies. Reloading clears your images; download a recipe to
+            keep your settings.
+          </p>
+        </section>
+        <section data-panel="subject" hidden>
+          <h2>Build your subject</h2>
+          <label>Selected subject<select id="subject-select"></select></label
+          ><label
+            >Subject label<input id="subject-name" maxlength="160" /></label
+          ><label class="check"
+            ><input id="include-subject" type="checkbox" checked />Include in
+            batches / randomizer</label
+          >
+          <div class="button-row">
+            <button id="new-assembly">New assembly</button
+            ><button id="delete-assembly">Delete assembly</button>
+          </div>
+          <p class="hint">
+            For parts sheets: create an assembly, then add gallery cells as
+            layers. Alignment is manual. Each layer initially fits a 320 px box.
+          </p>
+          <div id="assembly-fields" hidden>
+            <label>Assembly layers<select id="layer-select"></select></label>
+            <div class="two">
+              <label
+                >Layer X<input
+                  id="layer-x"
+                  type="number"
+                  min="-1000"
+                  max="1000"
+                  value="0" /></label
+              ><label
+                >Layer Y<input
+                  id="layer-y"
+                  type="number"
+                  min="-1000"
+                  max="1000"
+                  value="0"
+              /></label>
+            </div>
+            <div class="two">
+              <label
+                >Layer scale<input
+                  id="layer-scale"
+                  type="number"
+                  min="0.1"
+                  max="4"
+                  step="0.05"
+                  value="1" /></label
+              ><label
+                >Layer angle<input
+                  id="layer-rotation"
+                  type="number"
+                  min="-180"
+                  max="180"
+                  value="0"
+              /></label>
+            </div>
+            <div class="two">
+              <label class="check"
+                ><input id="layer-flip" type="checkbox" />Flip layer</label
+              ><label class="check"
+                ><input
+                  id="layer-visible"
+                  type="checkbox"
+                  checked
+                />Visible</label
+              >
+            </div>
+            <div class="button-row">
+              <button id="layer-back">Backward</button
+              ><button id="layer-front">Forward</button
+              ><button id="layer-remove">Remove</button>
+            </div>
+          </div>
+          <h3>Banner placement</h3>
+          <div class="two">
+            <label
+              >Offset X<input
+                id="subject-x"
+                type="number"
+                min="-1000"
+                max="1000"
+                value="0" /></label
+            ><label
+              >Offset Y<input
+                id="subject-y"
+                type="number"
+                min="-1000"
+                max="1000"
+                value="0"
+            /></label>
+          </div>
+          <div class="two">
+            <label
+              >Scale<input
+                id="subject-scale"
+                type="number"
+                min="0.1"
+                max="4"
+                step="0.05"
+                value="1" /></label
+            ><label
+              >Angle<input
+                id="subject-rotation"
+                type="number"
+                min="-180"
+                max="180"
+                value="0"
+            /></label>
+          </div>
+          <label class="check"
+            ><input id="subject-flip" type="checkbox" />Flip subject
+            horizontally</label
+          ><label class="check"
+            ><input id="smooth" type="checkbox" checked />Smooth artwork (off
+            for pixel art)</label
+          ><button id="reset-transform" class="wide">Reset placement</button>
+        </section>
+        <section data-panel="style" hidden>
+          <h2>Find your look</h2>
+          <label
+            >Project label<input
+              id="project"
+              maxlength="120"
+              value="MY MODKIT" /></label
+          ><label
+            >Release name<input
+              id="release-name"
+              maxlength="160"
+              value="Ceruleanish Facet Prism" /></label
+          ><label
+            >Version / secondary text<input
+              id="version"
+              maxlength="100"
+              value="CONCEPT"
+          /></label>
+          <label
+            >Layout<select id="layout">
+              <option value="right">Classic · subject right</option>
+              <option value="left">Reversed · subject left</option>
+              <option value="center">Centered · subject above</option>
+            </select></label
+          ><label
+            >Palette<select id="palette">
+              <option value="blue">Glacier blue</option>
+              <option value="orange">Amber orange</option>
+              <option value="green">Jade green</option>
+            </select></label
+          >
+          <div class="two">
+            <label
+              >Accent<input id="accent" type="color" value="#8dc4ed" /></label
+            ><label
+              >Background<input id="background" type="color" value="#111b29"
+            /></label>
+          </div>
+          <label
+            >Matched quotation style<select id="quote">
+              <option value="english">English “name”</option>
+              <option value="french" selected>French « name »</option>
+              <option value="spanish">Spanish «name»</option>
+              <option value="german">German „name“</option>
+              <option value="japanese">Japanese 「name」</option>
+            </select></label
+          ><label class="check"
+            ><input id="show-guides" type="checkbox" />Show text and subject
+            guides (preview only)</label
+          >
+          <h3>A little serendipity</h3>
+          <label
+            >Seed<input id="seed" maxlength="160" value="banner-lab"
+          /></label>
+          <p class="hint">
+            Checked fields may change. Uncheck a field to lock it. Preview edits
+            never reroll.
+          </p>
+          <div class="random-fields">
+            <label class="check"
+              ><input
+                data-random="subject"
+                type="checkbox"
+                checked
+              />Subject</label
+            ><label class="check"
+              ><input
+                data-random="layout"
+                type="checkbox"
+                checked
+              />Layout</label
+            ><label class="check"
+              ><input
+                data-random="palette"
+                type="checkbox"
+                checked
+              />Palette</label
+            ><label class="check"
+              ><input
+                data-random="quote"
+                type="checkbox"
+                checked
+              />Quotes</label
+            ><label class="check"
+              ><input data-random="name" type="checkbox" />Name</label
+            >
+          </div>
+          <label
+            >Name pool · one per line<textarea
+              id="name-pool"
+              rows="3"
+              placeholder="Ceruleanish Facet Prism&#10;Amberish Orbit"
+            ></textarea></label
+          ><button id="shuffle" class="primary wide">
+            Shuffle enabled fields <span>↗</span>
+          </button>
+        </section>
+        <section data-panel="batch" hidden>
+          <h2>Make a whole collection</h2>
+          <label
+            >Batch mode<select id="batch-mode">
+              <option value="subjects">One per included subject</option>
+              <option value="random" selected>Seeded random variations</option>
+              <option value="combinations">
+                Subjects × layouts × palettes
+              </option>
+            </select></label
+          ><label
+            >Random variations<input
+              id="batch-count"
+              type="number"
+              min="1"
+              max="100"
+              value="12" /></label
+          ><label class="check"
+            ><input id="batch-labels" type="checkbox" />Use subject labels as
+            release names</label
+          >
+          <h3 class="advanced-only">Eligible styles</h3>
+          <p class="hint advanced-only">
+            Used by combinations and the randomizer. Quote and name pools are in
+            Style.
+          </p>
+          <fieldset id="layout-pool" class="advanced-only">
+            <legend>Layouts</legend>
+            <label class="check"
+              ><input type="checkbox" value="right" checked />Classic</label
+            ><label class="check"
+              ><input type="checkbox" value="left" checked />Reversed</label
+            ><label class="check"
+              ><input type="checkbox" value="center" checked />Centered</label
+            >
+          </fieldset>
+          <fieldset id="palette-pool" class="advanced-only">
+            <legend>Palettes</legend>
+            <label class="check"
+              ><input type="checkbox" value="blue" checked />Blue</label
+            ><label class="check"
+              ><input type="checkbox" value="orange" checked />Orange</label
+            ><label class="check"
+              ><input type="checkbox" value="green" checked />Green</label
+            >
+          </fieldset>
+          <fieldset id="quote-pool" class="advanced-only">
+            <legend>Quotes</legend>
+            <label class="check"
+              ><input type="checkbox" value="english" checked />English</label
+            ><label class="check"
+              ><input type="checkbox" value="french" checked />French</label
+            ><label class="check"
+              ><input type="checkbox" value="spanish" checked />Spanish</label
+            ><label class="check"
+              ><input type="checkbox" value="german" checked />German</label
+            ><label class="check"
+              ><input type="checkbox" value="japanese" checked />Japanese</label
+            >
+          </fieldset>
+          <button id="plan-batch" class="primary wide">
+            Preview batch <span>→</span>
+          </button>
+          <p class="hint">
+            Up to 100 banners. Review and edit titles before downloading. Images
+            and recipes arrive together in a single ZIP.
+          </p>
+        </section>
+      </aside>
+      <div class="stage">
+        <section class="preview-section">
+          <div class="panel-bar">
+            <div>
+              <span class="eyebrow">LIVE COMPOSITION</span>
+              <h2>Release preview</h2>
+            </div>
+            <span class="dimensions">1500 × 500 · PNG</span>
+          </div>
+          <div class="banner-wrap">
+            <div class="banner-inner">
+              <canvas
+                id="banner"
+                width="1500"
+                height="500"
+                aria-label="Live release banner preview"
+              ></canvas
+              ><svg
+                id="safe-guides"
+                viewBox="0 0 1500 500"
+                aria-label="Text and subject layout guides"
+                hidden
+              >
+                <rect id="text-guide" x="70" y="80" width="890" height="310" />
+                <rect
+                  id="subject-guide"
+                  x="1050"
+                  y="70"
+                  width="360"
+                  height="360"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="preview-actions">
+            <p id="preview-detail">Original demo artwork · local composition</p>
+            <div class="button-row">
+              <button id="save-recipe" class="advanced-only">Save recipe</button
+              ><button id="export-png" class="primary" disabled>
+                Download PNG <span>↓</span>
+              </button>
+            </div>
+          </div>
+          <p id="warnings" class="warning" role="status" hidden></p>
+        </section>
+        <section class="sheet-section">
+          <div class="panel-bar">
+            <div>
+              <span class="eyebrow" id="gallery-eyebrow"
+                >PICK YOUR FAVOURITE</span
+              >
+              <h2>
+                <span id="gallery-title">Choose a sprite</span>
+                <span id="cell-count" class="count"></span>
+              </h2>
+            </div>
+            <div class="button-row">
+              <button id="fit">Fit</button><button id="actual-size">1:1</button
+              ><label class="zoom-label"
+                >Zoom
+                <input
+                  id="zoom"
+                  type="range"
+                  min="0.1"
+                  max="4"
+                  step="0.05"
+                  value="1"
+              /></label>
+            </div>
+          </div>
+          <div class="cutting-room">
+            <div>
+              <div
+                id="sheet-viewport"
+                tabindex="0"
+                role="region"
+                aria-label="Sheet editor. Drag guides or draw regions. Shift-drag to pan; use numeric fields for exact cuts."
+              >
+                <canvas
+                  id="sheet"
+                  width="720"
+                  height="480"
+                  aria-label="Sheet preview with crop guides"
+                ></canvas>
+              </div>
+              <div class="sheet-footer">
+                <span id="coordinates">Source pixels</span
+                ><span>Shift + drag to pan · arrows nudge selected region</span>
+              </div>
+            </div>
+            <div class="gallery-wrap">
+              <div class="gallery-heading">
+                <strong>Subjects</strong>
+                <div class="button-row">
+                  <button id="select-all" class="quiet">All</button
+                  ><button id="select-none" class="quiet">None</button>
+                </div>
+              </div>
+              <div id="gallery" aria-label="Cut cells and assemblies"></div>
+              <div class="gallery-pages">
+                <button id="gallery-prev" aria-label="Previous subjects">
+                  ←</button
+                ><span id="gallery-page" role="status"></span
+                ><button id="gallery-next" aria-label="Next subjects">→</button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="batch-section" class="batch-section" hidden>
+          <div class="panel-bar">
+            <div>
+              <span class="eyebrow">READY FOR PRODUCTION</span>
+              <h2>Batch preview</h2>
+            </div>
+            <button id="close-batch">Close</button>
+          </div>
+          <p id="batch-summary"></p>
+          <div id="batch-gallery"></div>
+          <div class="preview-actions">
+            <div>
+              <progress
+                id="batch-progress"
+                max="100"
+                value="0"
+                hidden
+                aria-label="Batch export progress"
+              ></progress
+              ><span id="batch-status" role="status"></span>
+            </div>
+            <div class="button-row">
+              <button id="cancel-batch" hidden>Cancel</button
+              ><button id="export-batch" class="primary">Download ZIP ↓</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <div id="notice" class="notice" role="status" aria-live="polite">
+      Loading the lab…
+    </div>
+    <footer>
+      <span
+        >VERSION BANNER GENERATOR <span class="separator">/</span> Original
+        demos · CC0</span
+      ><span
+        >Your artwork retains its own rights.
+        <a href="./help.html">How it works ↗</a></span
+      >
+    </footer>
+    <noscript
+      >This editor needs JavaScript to process your images locally.</noscript
+    >
+  </body>
+</html>

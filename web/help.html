@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How to use Banner Lab</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body data-view="simple">
+    <header class="masthead">
+      <a class="brand" href="./"
+        ><img src="./assets/mark.svg" alt="" width="32" height="32" />BANNER
+        LAB</a
+      ><a href="./">← Back to editor</a>
+    </header>
+    <main class="help-content">
+      <p class="eyebrow">A SHEET-TO-BANNER WORKFLOW</p>
+      <h1>Make something <em>release-worthy.</em></h1>
+      <h2>01 / Bring your artwork</h2>
+      <p>
+        Simple View opens with Create and Batch tabs. Try the six original
+        geometric demos, or open static PNG/JPEG images. Transparent images work
+        best. Images are read locally, stay in memory and are never uploaded.
+        There is no analytics or browser persistence. Reloading clears the
+        project.
+      </p>
+      <h2>02 / Make your cuts</h2>
+      <p>
+        Uploads automatically suggest sprite crops using transparency or an
+        estimated background. Pick a thumbnail and start making banners
+        immediately. Find sprites again repeats detection; Adjust cuts opens
+        Advanced View for corrections. Switching views keeps your work.
+        Detection can split detached effects or join touching sprites. Opaque
+        backgrounds and captions are preserved, not removed.
+      </p>
+      <p>
+        In Advanced View, use a uniform grid for equal cells, custom guides for
+        uneven rows, or free rectangles for an irregular atlas. Numeric fields
+        use source pixels. Grid margins are symmetric; gutters are excluded.
+        Counts calculate cell size by rounding down, with remainders controlled
+        by “Include partial edge cells”.
+      </p>
+      <p>
+        Drag amber grid handles to resize cells, or drag custom guide lines. In
+        rectangle mode drag to draw, drag inside a region to move it, or drag
+        its lower-right handle to resize. Alt-drag draws over an existing
+        region. Region selectors and numeric fields provide a keyboard
+        alternative; arrows nudge a selected region (Shift for 10 pixels).
+        Shift-drag pans. Click <strong>Apply cuts</strong> to update subjects.
+        Undo/redo restores applied cuts. Overlapping rectangles are allowed and
+        preserve duplicated pixels.
+      </p>
+      <h2>03 / Choose a subject</h2>
+      <p>
+        Select a thumbnail. Include/exclude checkboxes control batches and
+        random selection. Rename it in Subject. Transparent-edge trimming is
+        recorded alongside its original crop; fully transparent cells may be
+        skipped.
+      </p>
+      <p>
+        For separate parts, create an assembly from the current subject and add
+        cells with “+ Layer”. Layers are ordered back to front. Edit offsets,
+        scale, rotation, visibility and flip in Subject. Each layer initially
+        fits a 320 pixel box; alignment is manual. Banner placement controls
+        transform the whole subject.
+      </p>
+      <h2>04 / Style it, then export</h2>
+      <p>
+        In Simple View edit your text and colour directly. Surprise me changes
+        the subject and palette while keeping the text. In Advanced View, open
+        Style for Classic, Reversed or Centered, a palette, background and
+        matched quotes. Palettes change typography and accents; they do not
+        recolour sprites. Disable smoothing for pixel art. PNGs use the same
+        1500 × 500 renderer as the preview.
+      </p>
+      <p>
+        Checked randomizer fields may change; unchecked fields are locked. Seed
+        and shuffle index determine choices. Ordinary edits never reroll.
+        Optional name lists use one name per line. Versions are always supplied
+        by you.
+      </p>
+      <h2>05 / Make a batch</h2>
+      <p>
+        Choose one per included subject, seeded variations, or subjects ×
+        selected layouts × palettes. Style checkboxes set eligible pools. Random
+        mode also respects Style locks. Preview, edit names, then download a ZIP
+        of PNGs, recipes and a manifest. Numbered filenames stay stable after
+        title edits. Rendering is sequential and cancellable; failed or
+        cancelled jobs never download partial ZIPs.
+      </p>
+      <h2>Keep the recipe</h2>
+      <p>
+        In Advanced View save JSON alongside original source images. Open recipe
+        restores cuts, assemblies, styles and resolved choices after checking
+        SHA256 hashes. Re-select source images when prompted. Recipes contain no
+        artwork or absolute paths. Browser exports use
+        <code>banner-lab-v1</code>; PowerShell recipes cannot be replayed
+        automatically here. Fonts and generator version are recorded;
+        rasterization can vary between browsers.
+      </p>
+      <h2>Practical limits</h2>
+      <p>
+        Static PNG/JPEG only. 20 MB per file, 4096 pixels per side, 8 megapixels
+        per image, 8 sheets and 24 megapixels per project. 1,024 regions per
+        sheet, 1,124 subjects per project, 32 layers per assembly, 100 outputs
+        per batch, 128 MB per ZIP. These are caps, not performance guarantees;
+        reduce the batch on memory-constrained devices. No animation, anatomy
+        detection, recolouring or model rendering is included.
+      </p>
+      <p>
+        Requires modern Canvas 2D, Web Crypto and createImageBitmap support.
+        Development checks cover Chromium and Firefox; Safari and touch devices
+        require separate testing.
+      </p>
+      <h2>Rights & source</h2>
+      <p>
+        Original code and demos are CC0. Lato and the Noto Sans JP quote subset
+        use SIL OFL 1.1; fflate uses MIT.
+        <a href="./assets/README.md">Asset provenance</a>. Your artwork retains
+        its own terms.
+        <a href="https://github.com/sssv-modkit-dev/version-banner-generator"
+          >Source ↗</a
+        >
+      </p>
+    </main>
+  </body>
+</html>

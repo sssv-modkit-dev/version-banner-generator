@@ -1,0 +1,14 @@
+{
+  "name": "version-banner-generator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build-web.mjs",
+    "test": "node --test tests/web/*.test.mjs",
+    "test:browser": "playwright test",
+    "preview": "python tools/serve-web.py"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}
