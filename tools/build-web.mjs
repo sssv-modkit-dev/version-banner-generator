@@ -18,6 +18,7 @@ const files = [
   "core.mjs",
   "render.mjs",
   "background.mjs",
+  "theme.mjs",
   "detect.mjs",
   "detect-worker.mjs",
   ...[

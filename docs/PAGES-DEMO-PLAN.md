@@ -2,7 +2,9 @@
 
 Status: implemented, 2026-10-30. The sheet-to-batch app and manual Pages
 workflow include default Simple View, automatic crop suggestions and mobile-first
-ordering. Public deployment remains a separate manual step.
+ordering. The app is published on GitHub Pages; later releases still use manual
+workflow dispatch. The current revision adds matte cleanup, dense browsing,
+independent element styles and animated sprite remixes.
 See [development and release notes](BANNER-LAB.md) for commands and limitations.
 
 ## Outcome
@@ -48,8 +50,8 @@ must not be advertised as pixel-identical.
 - Read files locally. No upload endpoint, remote image imports, telemetry or
   externally hosted fonts. Load app assets from the same site origin.
 - Accept PNG/JPEG sheets and single images. Preserve PNG alpha. Animated
-  formats, SVG inputs, automatic background removal and model rendering are outside
-  the first release.
+  formats, SVG inputs and model rendering are outside the first release. Flat-matte
+  background removal is now supported, with manual colour/tolerance controls.
 - Support uniform grids, uneven row/column cuts, and independent rectangular
   regions. Automatic detection now proposes editable crop rectangles on import.
 - Treat every cell as an independent subject by default. Offer an explicit parts

@@ -1,8 +1,8 @@
+import { applyTheme, elementStyle } from "./theme.mjs";
 import {
   FORMAT,
   ENGINE,
   LIMITS,
-  PALETTES,
   clone,
   assert,
   dimensions,
@@ -20,6 +20,7 @@ import {
 } from "./core.mjs";
 import {
   canvas,
+  preparedSource,
   loadFonts,
   drawSubject,
   renderBanner,
@@ -48,6 +49,7 @@ let history = [],
   shuffleIndex = 0,
   renderOK = false,
   ready = false;
+let remixChoices = [], demoFrame = 0, demoMotion = true, demoVisible = false;
 let view = "simple",
   currentTab = "create",
   galleryPage = 0,
@@ -126,12 +128,18 @@ function setView(next) {
   paintGallery();
   requestAnimationFrame(fitSheet);
 }
+function gallerySize() { return Number($("gallery-size").value); }
+function gallerySubjects() {
+  const query = $("gallery-search").value.toLowerCase().trim();
+  return state.subjects.filter(s => !query || `${s.name} ${s.layers.map(l => state.sources.find(v => v.id === l.sourceId)?.name || "").join(" ")}`.toLowerCase().includes(query));
+}
 function revealSubject() {
+  $("gallery-search").value = "";
   galleryPage = Math.floor(
     Math.max(
       0,
       state.subjects.findIndex((s) => s.id === state.activeSubjectId),
-    ) / (view === "simple" ? 12 : 24),
+    ) / gallerySize(),
   );
 }
 document
@@ -319,9 +327,12 @@ function syncQuickUI() {
       `${s.name} · ${s.width} × ${s.height} · ${state.subjects.filter((v) => v.kind === "cell" && v.layers[0].sourceId === s.id).length} sprites`;
   const message =
     state.sheets[sourceId]?.detection?.message ||
-    "Original demo · six ready-to-use sprites.";
+    "Original sprite sheet · six ready-to-remix characters.";
   $("detection-summary").textContent = message;
   $("advanced-detection").textContent = message;
+  $("demo-remixes").hidden = !demoOnly;
+  const r = subject()?.layers[0]?.rect;
+  $("artwork-detail").textContent = r ? `${r.w} × ${r.h} source pixels · ${subject().layers.length} layer${subject().layers.length === 1 ? "" : "s"}.` : "";
 }
 function layerFrom(sourceId, rect, originalRect = rect) {
   return {
@@ -344,7 +355,7 @@ async function applyCuts(record = true) {
   );
   const cropCanvas = canvas(s.width, s.height),
     ctx = cropCanvas.getContext("2d", { willReadFrequently: true });
-  ctx.drawImage(images.get(s.id), 0, 0);
+  ctx.drawImage(preparedSource(images.get(s.id), state.banner), 0, 0);
   const cells = [];
   for (let i = 0; i < rects.length; i++) {
     const original = rects[i];
@@ -461,6 +472,12 @@ function syncBannerUI() {
   for (const id of ["remove-background", "quick-remove-background"])
     $(id).checked = b.removeBackground === true;
   $("smooth").checked = b.smooth;
+  $("quick-artwork-sizing").value = b.artworkSizing || "fill";
+  $("background-tolerance").value = b.backgroundTolerance ?? 12;
+  $("auto-background-color").checked = !b.backgroundColor;
+  $("matte-color").value = b.backgroundColor || "#181f2b";
+  $("matte-color").disabled = !b.backgroundColor;
+  syncElementUI();
   $("seed").value = state.random.seed;
   $("name-pool").value = state.random.names.join("\n");
   document
@@ -526,19 +543,20 @@ function thumbnail(target, s, width = 128, height = 108) {
     state.banner.smooth,
     Math.min(width, height) / 400,
     state.banner.removeBackground === true,
+    state.banner,
   );
 }
 function paintGallery() {
   $("gallery").replaceChildren();
   $("cell-count").textContent = state.subjects.length;
   const active = subject();
-  const pageSize = view === "simple" ? 12 : 24,
-    pageCount = Math.max(1, Math.ceil(state.subjects.length / pageSize));
+  const filtered = gallerySubjects(), pageSize = gallerySize(),
+    pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   galleryPage = Math.min(galleryPage, pageCount - 1);
-  $("gallery-page").textContent = `${galleryPage + 1} / ${pageCount}`;
+  $("gallery-page").textContent = `${filtered.length} matches · ${galleryPage + 1} / ${pageCount}`;
   $("gallery-prev").disabled = galleryPage === 0;
   $("gallery-next").disabled = galleryPage === pageCount - 1;
-  for (const s of state.subjects.slice(
+  for (const s of filtered.slice(
     galleryPage * pageSize,
     (galleryPage + 1) * pageSize,
   )) {
@@ -550,9 +568,23 @@ function paintGallery() {
     button.setAttribute("aria-pressed", String(s.id === state.activeSubjectId));
     const c = canvas(128, 108);
     thumbnail(c, s);
-    button.append(c, document.createTextNode(s.name));
+    const caption = document.createElement("span");
+    caption.textContent = s.name;
+    button.append(c, caption);
     button.addEventListener("click", () => {
-      state.activeSubjectId = s.id;
+      if ($("gallery-action").value === "add" && subject()?.id !== s.id) {
+        let active = subject();
+        if (active.kind !== "assembly") {
+          assert(state.subjects.length < LIMITS.cells + 100, "Too many subjects.");
+          active = { id: `assembly-${crypto.randomUUID()}`, name: "My sprite mashup", kind: "assembly", include: true, layers: clone(active.layers) };
+          active.layers[0].x = -85;
+          active.layers[0].scale *= 0.75;
+          state.subjects.push(active);
+        }
+        assert(active.layers.length + s.layers.length <= 32, "Maximum 32 layers.");
+        for (const layer of s.layers) active.layers.push({ ...clone(layer), x: 85 + (active.layers.length - 1) * 20, scale: layer.scale * 0.75 });
+        state.activeSubjectId = active.id;
+      } else state.activeSubjectId = s.id;
       selectedLayer = 0;
       syncSubjects();
       paintGallery();
@@ -621,7 +653,7 @@ function drawSheet() {
   ctx.setTransform(zoom, 0, 0, zoom, 0, 0);
   ctx.clearRect(0, 0, s.width, s.height);
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(images.get(s.id), 0, 0);
+  ctx.drawImage(preparedSource(images.get(s.id), state.banner), 0, 0);
   let rects = [];
   try {
     rects = rectangles();
@@ -924,7 +956,7 @@ async function detectCurrent() {
       message: result.message,
     },
     skip: false,
-    trim: false,
+    trim: true,
   };
   selectedRect = -1;
   syncCutUI();
@@ -1046,7 +1078,7 @@ async function addFile(file) {
     mode: "rects",
     rects: result.rects,
     skip: false,
-    trim: false,
+    trim: true,
     detection: {
       kind: result.kind,
       confidence: result.confidence,
@@ -1107,9 +1139,14 @@ async function finishRecipe() {
   notice("Recipe restored with matching local images.");
 }
 async function demo() {
+  cancelAnimationFrame(demoFrame);
+  demoFrame = 0;
+  remixChoices = [];
   demoOnly = true;
   galleryPage = 0;
   clearPendingRecipe();
+  $("gallery-search").value = "";
+  $("gallery-action").value = "replace";
   for (const image of new Set(images.values())) image.close?.();
   images.clear();
   state = initialState();
@@ -1160,10 +1197,109 @@ async function demo() {
   syncSubjects();
   paintGallery();
   paint();
+  scrambleDemo();
   notice(
     "Original demo sheet loaded. Try cutting guides, select a subject, or bring your own PNG.",
   );
 }
+
+function syncElementUI() {
+  const style = elementStyle(state.banner, $("style-element").value);
+  $("element-color").value = style.color;
+  $("element-size").value = style.size;
+  $("element-face").value = style.face;
+}
+on("style-element", "change", syncElementUI);
+for (const id of ["element-color", "element-size", "element-face"])
+  on(id, id === "element-color" ? "input" : "change", () => {
+    state.banner.elementStyles ??= {};
+    state.banner.elementStyles[$("style-element").value] = {
+      color: $("element-color").value, size: numeric("element-size"), face: $("element-face").value,
+    };
+    paint(); invalidateBatch();
+  });
+on("element-reset", "click", () => {
+  if (state.banner.elementStyles) delete state.banner.elementStyles[$("style-element").value];
+  syncElementUI(); paint(); invalidateBatch();
+});
+on("quick-style", "click", () => { setView("advanced"); switchTab("style"); $("style-element").focus(); });
+for (const id of ["background-tolerance", "auto-background-color", "matte-color"])
+  on(id, "change", () => {
+    state.banner.backgroundTolerance = numeric("background-tolerance");
+    state.banner.backgroundColor = $("auto-background-color").checked ? null : $("matte-color").value;
+    syncBannerUI(); paintGallery(); paint(); invalidateBatch();
+  });
+on("gallery-size", "change", () => { revealSubject(); paintGallery(); });
+on("gallery-search", "input", () => { galleryPage = 0; paintGallery(); });
+on("edit-layers", "click", () => { setView("advanced"); switchTab("subject"); });
+on("export-subject", "click", async () => {
+  assert(subject(), "Select artwork first.");
+  const { renderCutout } = await import("./render.mjs");
+  download(await pngBlob(renderCutout(subject(), images, state.banner)), `${safeName(subject().name)}-cutout.png`);
+  notice("Transparent cutout downloaded. Your original image is unchanged.");
+});
+function scrambleDemo() {
+  if (!demoOnly) return;
+  const cells = state.subjects.filter(s => s.kind === "cell");
+  $("demo-options").replaceChildren();
+  remixChoices = ["Orbital nonsense", "Garden party", "Tiny trouble"].map((name, i) => {
+    const next = clone(state), layers = [];
+    for (let j = 0; j < 3; j++) {
+      const chosen = cells[(i * 2 + j + shuffleIndex) % cells.length];
+      layers.push({ ...clone(chosen.layers[0]), x: (j - 1) * 92, y: j === 1 ? -20 : 48, scale: j === 1 ? 0.72 : 0.48, rotation: (j - 1) * 18, flip: j === 2 });
+    }
+    const assembly = { id: `assembly-${crypto.randomUUID()}`, name, kind: "assembly", include: true, layers };
+    next.subjects.push(assembly); next.activeSubjectId = assembly.id;
+    applyTheme(next.banner, ["blue", "orange", "green"][(i + shuffleIndex) % 3]);
+    next.banner.name = name; next.banner.rotation = 0; next.banner.flip = false;
+    const button = document.createElement("button"), c = canvas(450, 150), label = document.createElement("span");
+    button.className = "remix-card"; label.textContent = `Use ${name} ↗`;
+    renderBanner(c, next, images);
+    const preview = canvas(450, 150);
+    preview.getContext("2d").drawImage(c, 0, 0, 450, 150);
+    button.append(preview, label);
+    button.addEventListener("click", guard(() => {
+      assert(state.subjects.length < LIMITS.cells + 100, "Too many subjects.");
+      state.subjects.push(clone(assembly)); state.activeSubjectId = assembly.id;
+      state.banner = clone(next.banner); selectedLayer = 0;
+      revealSubject(); syncBannerUI(); syncSubjects(); paintGallery(); paint(); invalidateBatch();
+    }));
+    $("demo-options").append(button);
+    return { state: next, canvas: preview, full: c };
+  });
+  shuffleIndex++;
+  startDemoMotion();
+}
+function startDemoMotion() {
+  cancelAnimationFrame(demoFrame);
+  let last = 0;
+  const animate = time => {
+    if (!demoOnly || !demoVisible || !demoMotion || document.hidden || matchMedia("(prefers-reduced-motion: reduce)").matches) { demoFrame = 0; return; }
+    if (time - last > 100) {
+      last = time;
+      for (const [i, choice] of remixChoices.entries()) {
+        const sample = clone(choice.state), active = sample.subjects.find(s => s.id === sample.activeSubjectId);
+        active.layers.forEach((layer, j) => { layer.y += Math.sin(time / 650 + j + i) * 9; layer.rotation += Math.sin(time / 900 + j) * 6; });
+        const full = choice.full; renderBanner(full, sample, images);
+        choice.canvas.getContext("2d").drawImage(full, 0, 0, 450, 150);
+      }
+    }
+    demoFrame = requestAnimationFrame(animate);
+  };
+  demoFrame = requestAnimationFrame(animate);
+}
+new IntersectionObserver(entries => {
+  demoVisible = entries.some(entry => entry.isIntersecting);
+  if (demoVisible) startDemoMotion();
+}, { rootMargin: "100px" }).observe($("demo-remixes"));
+on("remix-demo", "click", scrambleDemo);
+on("demo-motion", "click", () => {
+  demoMotion = !demoMotion;
+  $("demo-motion").textContent = demoMotion ? "Pause motion" : "Play motion";
+  $("demo-motion").setAttribute("aria-pressed", String(demoMotion));
+  startDemoMotion();
+});
+document.addEventListener("visibilitychange", () => { if (!document.hidden) startDemoMotion(); });
 
 on("image-file", "change", async (e) => {
   try {
@@ -1230,7 +1366,7 @@ for (const [id, key] of [
 ])
   on(id, id === "quick-palette" ? "change" : "input", (e) => {
     state.banner[key] = e.target.value;
-    if (key === "palette") state.banner.accent = PALETTES[e.target.value];
+    if (key === "palette") applyTheme(state.banner, e.target.value);
     syncBannerUI();
     paint();
     invalidateBatch();
@@ -1251,17 +1387,15 @@ on("quick-shuffle", "click", () => {
   state.banner = next.banner;
   state.activeSubjectId = next.activeSubjectId;
   state.resolvedSeed = next.resolvedSeed;
-  galleryPage = Math.floor(
-    state.subjects.findIndex((s) => s.id === state.activeSubjectId) / 12,
-  );
+  revealSubject();
   syncBannerUI();
   syncSubjects();
   paintGallery();
   paint();
   invalidateBatch();
 });
-on("demo", "click", demo);
-on("reset", "click", demo);
+on("demo", "click", () => withImageWork(demo));
+on("reset", "click", () => withImageWork(demo));
 function clearPendingRecipe() {
   const active = new Set(images.values());
   for (const image of new Set(pendingImages.values()))
@@ -1484,6 +1618,7 @@ const bannerFields = {
   "subject-scale": "scale",
   "subject-rotation": "rotation",
   "subject-flip": "flip",
+  "quick-artwork-sizing": "artworkSizing",
   smooth: "smooth",
 };
 for (const [id, key] of Object.entries(bannerFields))
@@ -1495,8 +1630,8 @@ for (const [id, key] of Object.entries(bannerFields))
           ? numeric(id)
           : e.target.value;
     if (key === "palette") {
-      state.banner.accent = PALETTES[state.banner.palette];
-      $("accent").value = state.banner.accent;
+      applyTheme(state.banner, state.banner.palette);
+      syncBannerUI();
     }
     paint();
     if (key === "smooth") paintGallery();

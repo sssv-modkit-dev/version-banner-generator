@@ -9,7 +9,7 @@ Includes one-command PNG export, future-concept batches and a resolved JSON reci
 **Current scope:** a browser Banner Lab for local PNG/JPEG sheets and a standalone
 Windows PowerShell/System.Drawing compositor. Both export 1500 x 500 banners.
 No AI generation, model renderer, game adapter or original modkit installation is
-required. The examples are original geometric artwork.
+required. The examples are original artwork.
 
 ## Banner Lab
 
@@ -26,7 +26,11 @@ on the visitor's device; the app has no uploads, analytics or external font call
 Detection handles transparent sheets and common flat/printed backgrounds, with
 manual corrections available. Flat sprite backgrounds become transparent automatically;
 turn this off to keep the original. Rotate 90 degrees or flip horizontally/vertically
-in either view. Preview, PNG, batch exports and recipes retain these settings.
+in either view. Preview, PNG, batch exports and recipes retain these settings. The
+searchable picker shows 96 sprites at a time, with a Show all option. Combine
+several sprites as layers, download transparent cutouts, and style each text element
+independently while themes coordinate the defaults. The demo includes an original
+character sheet and animated, editable mashups; PNG exports are still images.
 
 Preview the implementation locally:
 

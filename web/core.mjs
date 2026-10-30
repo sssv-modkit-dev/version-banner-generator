@@ -1,3 +1,4 @@
+import { applyTheme, ELEMENTS } from "./theme.mjs";
 export const FORMAT = "banner-lab-v1";
 export const ENGINE = "1.0.0";
 export const LIMITS = Object.freeze({
@@ -197,6 +198,10 @@ export function initialState() {
       quote: "french",
       smooth: true,
       removeBackground: true,
+      backgroundTolerance: 12,
+      backgroundColor: null,
+      artworkSizing: "natural",
+      elementStyles: {},
       scale: 1,
       x: 0,
       y: 0,
@@ -236,7 +241,7 @@ export function randomize(state, seed) {
     if (cfg.enabled[field] && pool.length) next.banner[field] = choose(pool);
   }
   if (cfg.enabled.palette && cfg.palettes.length)
-    next.banner.accent = PALETTES[next.banner.palette];
+    applyTheme(next.banner, next.banner.palette);
   next.resolvedSeed = String(seed);
   return next;
 }
@@ -271,7 +276,7 @@ export function batchJobs(state, mode, count, useLabels = false) {
           job.activeSubjectId = subject.id;
           job.banner.layout = layout;
           job.banner.palette = palette;
-          if (combos) job.banner.accent = PALETTES[palette];
+          if (combos) applyTheme(job.banner, palette);
           jobs.push(job);
         }
   }
@@ -340,6 +345,19 @@ export function validateState(input) {
     num(v.scale, 0.1, 4) &&
     num(v.rotation, -180, 180) &&
     typeof v.flip === "boolean";
+  assert(
+    (b.backgroundTolerance === undefined || num(b.backgroundTolerance, 0, 80)) &&
+    (b.backgroundColor == null || /^#[0-9a-f]{6}$/i.test(b.backgroundColor)) &&
+    (b.artworkSizing === undefined || ["natural", "fill"].includes(b.artworkSizing)),
+    "Invalid artwork cleanup or sizing settings.",
+  );
+  if (b.elementStyles !== undefined) {
+    assert(b.elementStyles && typeof b.elementStyles === "object" && !Array.isArray(b.elementStyles), "Invalid element styling.");
+    for (const [key, style] of Object.entries(b.elementStyles))
+      assert(ELEMENTS.includes(key) && style &&
+        /^#[0-9a-f]{6}$/i.test(style.color) && num(style.size, 12, 96) &&
+        ["plain", "display"].includes(style.face), "Invalid element styling.");
+  }
   assert(
     transform(b) && typeof b.smooth === "boolean" &&
       (b.removeBackground === undefined || typeof b.removeBackground === "boolean"),

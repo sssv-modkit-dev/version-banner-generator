@@ -122,13 +122,28 @@ export function detectCells(data, width, height) {
   }
   if (!components.length)
     return fallback("No separate subjects found. Kept the whole image.");
-  const byArea = components.slice().sort((a, b) => b.area - a.area);
+  const largest = components.reduce((a,b) => a.area > b.area ? a : b);
+  const captionParts = new Set(), baselines = [];
+  for (const c of components.filter(c => c.h <= Math.max(12, largest.h * 0.12) && c.area < largest.area * 0.06)) {
+    const cy = c.y + c.h / 2;
+    let row = baselines.find(row => Math.abs(row.cy - cy) <= 3);
+    if (!row) baselines.push(row = { cy, parts: [] });
+    row.parts.push(c);
+  }
+  for (const row of baselines) {
+    const span = Math.max(...row.parts.map(c => c.x + c.w)) - Math.min(...row.parts.map(c => c.x));
+    const height = Math.max(...row.parts.map(c => c.h));
+    if (row.parts.length >= 8 && span >= height * 6)
+      row.parts.forEach(c => captionParts.add(c));
+  }
+  const artwork = components.filter(c => !captionParts.has(c));
+  const byArea = artwork.slice().sort((a,b) => b.area - a.area);
   // Ignore annotations/noise relative to substantial artwork, without assuming a grid.
   const reference =
     byArea[Math.min(4, Math.floor(byArea.length * 0.08))] || byArea[0];
   const minArea = Math.max(12, reference.area * 0.014);
   const minHeight = Math.max(3, reference.h * 0.19);
-  const large = components.filter(
+  const large = artwork.filter(
     (c) => c.area >= minArea && c.h >= minHeight && c.w >= 3,
   );
   if (!large.length)
@@ -168,6 +183,7 @@ export function detectCells(data, width, height) {
       Math.max(0, a.y - b.y - b.h, b.y - a.y - a.h),
     );
   for (const detail of small) {
+    if (captionParts.has(detail)) continue;
     let nearest = null,
       best = Infinity;
     for (const body of large) {
@@ -190,6 +206,19 @@ export function detectCells(data, width, height) {
       Object.assign(nearest, { x, y, w: right - x, h: bottom - y });
     }
   }
+  // Attached details can expand an enclosing silhouette. Recheck containment so
+  // a narrow antenna inside that completed silhouette is not offered on its own.
+  for (let i = 0; i < large.length; i++)
+    for (let j = i + 1; j < large.length; j++) {
+      const a = large[i], b = large[j];
+      const intersection = Math.max(0, Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x)) *
+        Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+      if (intersection / Math.min(a.w*a.h,b.w*b.h) > 0.72) {
+        const x = Math.min(a.x,b.x), y = Math.min(a.y,b.y);
+        Object.assign(a, { x, y, w: Math.max(a.x+a.w,b.x+b.w)-x, h: Math.max(a.y+a.h,b.y+b.h)-y, area: a.area+b.area });
+        large.splice(j--,1);
+      }
+    }
   const omitted = Math.max(0, large.length - LIMITS.cells);
   let rects = large
     .sort((a, b) => b.area - a.area)
@@ -228,6 +257,6 @@ export function detectCells(data, width, height) {
     kind,
     confidence,
     omitted,
-    message: `Found ${rects.length} candidate${rects.length === 1 ? "" : "s"} using ${kind}. ${omitted ? `${omitted} smaller candidates omitted (${LIMITS.cells} limit). ` : ""}${alpha ? "Check detached effects and close neighbours." : "Backgrounds and captions remain in the source; check the suggested crops."}`,
+    message: `Found ${rects.length} candidate${rects.length === 1 ? "" : "s"} using ${kind}. ${omitted ? `${omitted} smaller candidates omitted (${LIMITS.cells} limit). ` : ""}${alpha ? "Check detached effects and close neighbours." : "Likely caption rows omitted; check the suggested crops."}`,
   };
 }

@@ -1,5 +1,6 @@
 import { removeFlatBackground } from "./background.mjs";
 import { caption, assert } from "./core.mjs";
+import { elementStyle } from "./theme.mjs";
 export function canvas(w, h) {
   const c = document.createElement("canvas");
   c.width = w;
@@ -7,15 +8,21 @@ export function canvas(w, h) {
   return c;
 }
 const transparentSources = new WeakMap();
-function transparentSource(source) {
-  if (transparentSources.has(source)) return transparentSources.get(source);
+export function preparedSource(source, settings = {}) {
+  if (!settings.removeBackground) return source;
+  const key = `${settings.backgroundTolerance ?? 12}:${settings.backgroundColor || "auto"}`;
+  let cache = transparentSources.get(source);
+  if (!cache) transparentSources.set(source, cache = new Map());
+  if (cache.has(key)) return cache.get(key);
   const c = canvas(source.width, source.height), ctx = c.getContext("2d");
   ctx.drawImage(source, 0, 0);
   const pixels = ctx.getImageData(0, 0, c.width, c.height);
-  const removed = removeFlatBackground(pixels.data, c.width, c.height);
+  const removed = removeFlatBackground(pixels.data, c.width, c.height, settings.backgroundTolerance ?? 12, settings.backgroundColor);
   if (removed) ctx.putImageData(pixels, 0, 0);
   const result = removed ? c : source;
-  transparentSources.set(source, result);
+  // Bound retained full-resolution canvases while allowing an original/clean comparison.
+  cache.clear();
+  cache.set(key, result);
   return result;
 }
 export async function loadFonts() {
@@ -45,6 +52,7 @@ export function drawSubject(
   smooth = true,
   fit = 1,
   removeBackground = false,
+  settings = {},
 ) {
   ctx.save();
   ctx.translate(cx + transform.x, cy + transform.y);
@@ -64,13 +72,14 @@ export function drawSubject(
       "Missing source image. Open the matching PNG to replay this recipe.",
     );
     const r = layer.rect,
-      factor = Math.min(320 / r.w, 320 / r.h) * layer.scale;
+      natural = settings.artworkSizing === "natural" && fit >= 0.5,
+      factor = Math.min(320 / r.w, 320 / r.h, natural ? 2 : Infinity) * layer.scale;
     ctx.save();
     ctx.translate(layer.x, layer.y);
     ctx.rotate((layer.rotation * Math.PI) / 180);
     ctx.scale(layer.flip ? -1 : 1, 1);
     ctx.drawImage(
-      removeBackground ? transparentSource(source) : source,
+      preparedSource(source, { ...settings, removeBackground }),
       r.x,
       r.y,
       r.w,
@@ -107,23 +116,28 @@ export function renderBanner(target, state, images) {
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = b.accent;
   ctx.fillRect(center ? 734 : tx, center ? 35 : 76, 32, 3);
-  ctx.font = "21px Lab, LabQuotes";
+  const projectStyle = elementStyle(b, "project"),
+    titleStyle = elementStyle(b, "title"), subtitleStyle = elementStyle(b, "subtitle");
+  const font = (style, size = style.size) => `${style.face === "display" ? "italic 700 " : ""}${size}px Lab, LabQuotes`;
+  ctx.fillStyle = projectStyle.color;
+  ctx.font = font(projectStyle);
   assert(
     ctx.measureText(b.project).width <= max,
     "Project name is too wide. Shorten it.",
   );
   ctx.fillText(b.project, tx, center ? 78 : 125);
   const title = caption(b);
-  let size = center ? 48 : 60;
+  let size = titleStyle.size * (center ? 0.8 : 1);
   do {
-    ctx.font = `italic 700 ${size}px Lab, LabQuotes`;
+    ctx.font = font(titleStyle, size);
     if (ctx.measureText(title).width <= max) break;
     size--;
   } while (size >= 16);
   assert(size >= 16, "Title is too wide. Shorten it.");
+  ctx.fillStyle = titleStyle.color;
   ctx.fillText(title, tx, center ? 360 : 255);
-  ctx.fillStyle = "#a7b4c5";
-  ctx.font = "21px Lab, LabQuotes";
+  ctx.fillStyle = subtitleStyle.color;
+  ctx.font = font(subtitleStyle);
   assert(
     ctx.measureText(b.version).width <= max,
     "Version label is too wide. Shorten it.",
@@ -143,6 +157,7 @@ export function renderBanner(target, state, images) {
     b.smooth,
     center ? 0.55 : 1,
     b.removeBackground === true,
+    b,
   );
   if (size < 28)
     warnings.push(
@@ -153,6 +168,34 @@ export function renderBanner(target, state, images) {
       "The subject may overlap text or leave the banner. Check its position and scale.",
     );
   return [...new Set(warnings)];
+}
+export function renderCutout(subject, images, settings) {
+  const points = [], angle = settings.rotation * Math.PI / 180;
+  for (const l of subject.layers) {
+    if (!l.visible) continue;
+    const factor = Math.min(320 / l.rect.w, 320 / l.rect.h,
+      settings.artworkSizing === "natural" ? 2 : Infinity) * l.scale;
+    const a = l.rotation * Math.PI / 180;
+    for (const x of [-l.rect.w * factor / 2, l.rect.w * factor / 2])
+      for (const y of [-l.rect.h * factor / 2, l.rect.h * factor / 2]) {
+        const lx = (l.flip ? -x : x),
+          px = l.x + lx * Math.cos(a) - y * Math.sin(a),
+          py = l.y + lx * Math.sin(a) + y * Math.cos(a),
+          fx = settings.flip ? -px : px;
+        points.push([fx * Math.cos(angle) - py * Math.sin(angle), fx * Math.sin(angle) + py * Math.cos(angle)]);
+      }
+  }
+  assert(points.length, "Show at least one artwork layer.");
+  const minX = Math.floor(Math.min(...points.map(p => p[0]))) - 1,
+    minY = Math.floor(Math.min(...points.map(p => p[1]))) - 1,
+    w = Math.ceil(Math.max(...points.map(p => p[0]))) - minX + 1,
+    h = Math.ceil(Math.max(...points.map(p => p[1]))) - minY + 1;
+  assert(w <= 4096 && h <= 4096 && w * h <= 8_388_608, "This cutout is too large. Move layers closer or reduce their scale.");
+  const c = canvas(w, h);
+  drawSubject(c.getContext("2d"), subject, images, -minX, -minY,
+    { x: 0, y: 0, scale: 1, rotation: settings.rotation, flip: settings.flip },
+    settings.smooth, 1, settings.removeBackground === true, settings);
+  return c;
 }
 export function pngBlob(target) {
   return new Promise((resolve, reject) =>

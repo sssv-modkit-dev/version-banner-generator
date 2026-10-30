@@ -45,8 +45,7 @@
     <div class="intro">
       <div>
         <p class="eyebrow">A SMALL TOOL FOR YOUR NEXT BIG UPDATE</p>
-        <h1>Your sprites. <em>Your release.</em></h1>
-        <p>Cut a sheet, find a look, make one banner. Or a hundred.</p>
+        <h1>Make funny and <em>eye-popping banners</em> for your project versions!</h1>
       </div>
       <a
         class="source-link"
@@ -121,7 +120,7 @@
                 value="CONCEPT"
             /></label>
             <label
-              >Colour<select id="quick-palette">
+              >Theme<select id="quick-palette">
                 <option value="blue">Glacier blue</option>
                 <option value="orange">Amber orange</option>
                 <option value="green">Jade green</option>
@@ -135,6 +134,9 @@
               <button type="button" data-orient="horizontal">Flip horizontal</button>
               <button type="button" data-orient="vertical">Flip vertical</button>
             </div>
+            <label>Artwork size<select id="quick-artwork-sizing"><option value="natural">Natural · keep small sprites crisp</option><option value="fill">Fill · enlarge to fit</option></select></label>
+            <p id="artwork-detail" class="hint"></p>
+            <button id="quick-style" class="wide">Style each element ↗</button>
             <button id="quick-shuffle" class="wide">
               Surprise me <span>↗</span>
             </button>
@@ -393,6 +395,11 @@
               <button type="button" data-orient="horizontal">Flip horizontal</button>
               <button type="button" data-orient="vertical">Flip vertical</button>
             </div>
+          <h3>Clean artwork</h3>
+          <label>Background tolerance<input id="background-tolerance" type="range" min="0" max="80" value="12" /></label>
+          <label class="check"><input id="auto-background-color" type="checkbox" checked />Detect matte colour automatically</label>
+          <label>Matte colour<input id="matte-color" type="color" value="#181f2b" /></label>
+          <p class="hint">Use a colour from your sheet if the automatic cutout misses its background. Higher tolerance removes more near-matching colour. Your original stays intact.</p>
           <h3>Banner placement</h3>
           <div class="two">
             <label
@@ -462,7 +469,7 @@
               <option value="center">Centered · subject above</option>
             </select></label
           ><label
-            >Palette<select id="palette">
+            >Theme<select id="palette">
               <option value="blue">Glacier blue</option>
               <option value="orange">Amber orange</option>
               <option value="green">Jade green</option>
@@ -487,6 +494,12 @@
             ><input id="show-guides" type="checkbox" />Show text and subject
             guides (preview only)</label
           >
+          <h3>Style each element</h3>
+          <p class="hint">Themes coordinate the defaults. Customise one element without changing the others; your overrides stay when the theme changes.</p>
+          <label>Element<select id="style-element"><option value="title">Release title</option><option value="project">Project label</option><option value="subtitle">Version / subtitle</option></select></label>
+          <div class="two"><label>Colour<input id="element-color" type="color" /></label><label>Size<input id="element-size" type="number" min="12" max="96" /></label></div>
+          <label>Lettering<select id="element-face"><option value="display">Bold italic</option><option value="plain">Clean regular</option></select></label>
+          <button id="element-reset" class="wide">Follow theme for this element</button>
           <h3>A little serendipity</h3>
           <label
             >Seed<input id="seed" maxlength="160" value="banner-lab"
@@ -673,6 +686,13 @@
               /></label>
             </div>
           </div>
+          <div class="picker-toolbar">
+            <label>Find artwork<input id="gallery-search" type="search" placeholder="Search name, sheet or number" /></label>
+            <label>Show<select id="gallery-size"><option value="48">48 sprites</option><option value="96" selected>96 sprites</option><option value="192">192 sprites</option><option value="1124">All sprites</option></select></label>
+            <label>Click a sprite to<select id="gallery-action"><option value="replace">Use on its own</option><option value="add">Add to my composition</option></select></label>
+            <button id="edit-layers">Edit layers ↗</button>
+            <button id="export-subject">Download cutout PNG ↓</button>
+          </div>
           <div class="cutting-room">
             <div>
               <div
@@ -710,6 +730,12 @@
               </div>
             </div>
           </div>
+        </section>
+        <section id="demo-remixes" class="demo-remixes">
+          <div class="panel-bar"><div><span class="eyebrow">A LITTLE CONTROLLED CHAOS</span><h2>Same sprite sheet. New weird friends.</h2></div><div class="button-row"><button id="demo-motion" aria-pressed="true">Pause motion</button><button id="remix-demo">Scramble again ↗</button></div></div>
+          <p class="hint">Original sprite artwork, remixed as layers. Pick a look to keep editing it. The motion is a preview; downloads are still PNGs.</p>
+          <img class="demo-sheet-strip" src="./assets/demo-sheet.png" alt="Original demo sprite sheet with six colourful characters" width="720" height="480" />
+          <div id="demo-options"></div>
         </section>
         <section id="batch-section" class="batch-section" hidden>
           <div class="panel-bar">

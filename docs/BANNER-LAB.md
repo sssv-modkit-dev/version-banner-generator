@@ -26,6 +26,30 @@ Switching views preserves the project. On phones the preview stays above the
 controls, the sprite picker comes before text settings, and controls have larger
 touch targets. Advanced cutting still has numeric alternatives to dragging.
 
+## Artwork, themes and remixes
+
+The searchable picker defaults to 96 cards; choose 48, 192 or All. Search matches subject
+and source-sheet names. Click a sprite to use it alone or choose Add to my composition
+to combine artwork; Edit layers opens positioning, scale, rotation and ordering.
+Download cutout PNG exports the subject with transparent surroundings, without text.
+
+Background removal samples the most common border colour. Matching pixels
+connected to the border become transparent; enclosed colours remain. Advanced Subject controls offer an explicit matte colour and tolerance.
+The cleaned source is shared by cut trimming, thumbnails, cutouts, preview and exports.
+Natural sizing limits small-artwork enlargement to 2x at the default placement;
+Fill restores full-area fitting. It does not create missing detail. Further manual
+scaling remains possible. Original files and hashes stay unchanged.
+
+Themes supply coordinated title, project, subtitle, background and accent colours.
+Text elements each have independent colour, size and lettering overrides. Theme changes
+keep those overrides; Follow theme clears the selected element's override. Recipes and
+batches retain all styling and cleanup settings; older recipes retain legacy defaults.
+
+The demo uses six original character sprites to make three layered compositions. Each
+combines three editable layers. The preview animates those layers, can be paused, and
+respects reduced-motion preferences and hidden tabs. Select a remix to edit it; exports
+remain static PNGs. User imports hide the demo and are never used in public examples.
+
 ## Automatic detection
 
 Uploads are analysed in a local Web Worker. The detector uses alpha for transparent
@@ -118,7 +142,7 @@ Limits: 20 MB/file, 4096 px/side, 8 megapixels/image, 8 sheets, 24 megapixels/pr
 projects still depend on device memory. Batch settings are frozen during rendering;
 errors/cancellation discard the ZIP. Edits after planning invalidate stale batches.
 
-The original examples are code-generated geometric artwork. Refresh with
+The original examples are code-generated character sprites. Refresh with
 `python tools/make-demo-sheet.py` (Pillow required). Asset maintenance uses
 `tools/fetch-web-assets.py` (network and fontTools required); neither is run by a
 normal build. See `web/assets/README.md` before changing dependencies or fonts.

@@ -1,10 +1,10 @@
 // Remove only a dominant flat matte connected to the image border.
 // Enclosed matching colours (eyes, clothing, highlights) stay intact.
-export function removeFlatBackground(data, width, height) {
+export function removeFlatBackground(data, width, height, tolerance = 12, keyColor = null) {
   const total = width * height, counts = new Map();
   const keyAt = (p) => {
     const i = p * 4;
-    return [0, 1, 2].map(c => Math.round(data[i + c] / 16)).join(",");
+    return [0, 1, 2].map(c => data[i + c]).join(",");
   };
   let border = 0;
   const sample = p => {
@@ -16,15 +16,17 @@ export function removeFlatBackground(data, width, height) {
   for (let x = 0; x < width; x++) { sample(x); sample((height - 1) * width + x); }
   for (let y = 1; y < height - 1; y++) { sample(y * width); sample(y * width + width - 1); }
   const best = [...counts].sort((a, b) => b[1] - a[1])[0];
-  if (!best || best[1] < border * 0.7) return 0;
-  const colour = best[0].split(",").map(v => v * 16);
+  if (!keyColor && (!best || best[1] < border * 0.45)) return 0;
+  const colour = keyColor
+    ? keyColor.match(/[a-f0-9]{2}/gi).map(v => parseInt(v, 16))
+    : best[0].split(",").map(Number);
   const seen = new Uint8Array(total), queue = new Int32Array(total);
   let head = 0, tail = 0, removed = 0;
   const visit = p => {
     if (seen[p]) return;
     seen[p] = 1;
     const i = p * 4;
-    if (data[i + 3] !== 0 && colour.some((v, c) => Math.abs(data[i + c] - v) > 24)) return;
+    if (data[i + 3] !== 0 && colour.some((v, c) => Math.abs(data[i + c] - v) > tolerance)) return;
     queue[tail++] = p;
   };
   for (let x = 0; x < width; x++) { visit(x); visit((height - 1) * width + x); }

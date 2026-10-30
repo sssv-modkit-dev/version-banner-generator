@@ -183,3 +183,15 @@ test("JPEG marker dimensions are bounded before image allocation", () => {
     /dimensions/,
   );
 });
+
+
+test("recipes validate independent element styles and artwork cleanup settings", () => {
+  const s=fixture();
+  s.banner.elementStyles={ title:{color:"#ff2255",size:72,face:"plain"} };
+  s.banner.backgroundColor="#181f2b";
+  assert.equal(validateState(s).banner.elementStyles.title.size,72);
+  s.banner.elementStyles.title.size=Infinity;
+  assert.throws(()=>validateState(s), /element styling/);
+  s.banner.elementStyles={}; s.banner.backgroundTolerance=1000;
+  assert.throws(()=>validateState(s), /cleanup/);
+});

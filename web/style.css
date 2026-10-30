@@ -1370,3 +1370,37 @@ body[data-view="simple"] .help-content h2,
 body[data-view="simple"] .help-content h1 em {
   color: #456637;
 }
+
+/* Dense contact-sheet browsing, with a scrollable gallery instead of tiny pages. */
+.picker-toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:end; padding:12px 24px; border-bottom:1px solid var(--edge); }
+.picker-toolbar label { margin:0; min-width:130px; flex:1; }
+.picker-toolbar label:first-child { flex:2; }
+.picker-toolbar input, .picker-toolbar select { margin-top:5px; }
+.picker-toolbar button { min-height:38px; }
+#gallery, body[data-view="simple"] #gallery { grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:6px; padding:10px; max-height:560px; overflow:auto; align-content:start; }
+body[data-view="simple"] .cell-card { padding:4px; }
+body[data-view="simple"] .cell-card > button:first-child { min-height:82px; font-size:10px; }
+body[data-view="simple"] .cell-card canvas { height:66px; }
+.cell-card canvas { background:repeating-conic-gradient(#e2e7df 0% 25%,#f5f7f2 0% 50%) 50% / 12px 12px; border-radius:3px; }
+.cell-card > button:first-child span { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gallery-wrap { max-height:640px; }
+body[data-view="simple"] .intro h1 { max-width:940px; font-size:clamp(26px,3vw,40px); line-height:1.15; }
+.demo-remixes { border:1px solid var(--edge); border-radius:6px; margin-top:20px; overflow:hidden; background:var(--panel); }
+.demo-remixes > .hint { padding:0 24px; }
+.demo-sheet-strip { display:block; width:calc(100% - 48px); height:100px; object-fit:contain; margin:12px 24px; background:repeating-conic-gradient(#dce5d9 0% 25%,#f5f7f1 0% 50%) 50% / 14px 14px; border-radius:5px; }
+#demo-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; padding:12px 24px 24px; }
+.remix-card { display:block; padding:7px; background:transparent; min-width:0; text-align:left; }
+.remix-card canvas { display:block; width:100%; border-radius:4px; aspect-ratio:3; }
+.remix-card span { display:block; font-size:11px; margin:7px 2px 0; }
+@media(max-width:620px) {
+ .picker-toolbar { padding:12px; gap:8px; }
+ .picker-toolbar label { min-width:110px; }
+ .picker-toolbar button { flex:1; }
+ #demo-options { grid-template-columns:1fr; padding:12px; }
+ .demo-sheet-strip { width:calc(100% - 24px); margin:12px; }
+ .demo-remixes .panel-bar { flex-wrap:wrap; gap:10px; }
+ .demo-remixes > .hint { padding:0 12px; }
+ body[data-view="simple"] #gallery { grid-template-columns:repeat(auto-fill,minmax(76px,1fr)); }
+}
+
+@media(max-width:720px) { .demo-remixes { order:5; } }

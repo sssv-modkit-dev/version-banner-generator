@@ -56,3 +56,16 @@ test("disconnected details inside a silhouette do not create duplicate crops", (
   box(f, 60, 10, 30, 50);
   assert.equal(detectCells(f.data, 100, 80).rects.length, 2);
 });
+
+
+test("caption glyph rows do not expand nearby sprite crops", () => {
+  const width=180,height=120,data=new Uint8ClampedArray(width*height*4);
+  const fill=(x,y,w,h)=>{for(let yy=y;yy<y+h;yy++) for(let xx=x;xx<x+w;xx++) data.set([255,130,40,255],(yy*width+xx)*4);};
+  fill(20,20,55,60);
+  for(let i=0;i<14;i++) {
+    for(let y=83;y<91;y++) for(let x=8+i*9;x<12+i*9;x++) data.set([255,255,255,255],(y*width+x)*4);
+  }
+  const result=detectCells(data,width,height);
+  assert.equal(result.rects.length,1);
+  assert.ok(result.rects[0].y+result.rects[0].h<=82);
+});

@@ -24,3 +24,12 @@ test("transparent and ambiguous images retain their alpha", () => {
     assert.deepEqual(data, before);
   }
 });
+
+
+test("exact dark matte removal keeps low-contrast dark artwork", () => {
+  const data = new Uint8ClampedArray(12*12*4);
+  for(let p=0;p<144;p++) data.set([24,31,43,255], p*4);
+  for(let y=3;y<9;y++) for(let x=3;x<9;x++) data.set([24,24,24,255],(y*12+x)*4);
+  assert.equal(removeFlatBackground(data,12,12),108);
+  assert.equal(data[(3*12+3)*4+3],255);
+});
