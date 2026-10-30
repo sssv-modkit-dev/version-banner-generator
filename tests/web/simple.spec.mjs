@@ -299,6 +299,7 @@ test("automatic matte transparency, orientation and recipes agree with preview",
   const path = testInfo.outputPath("orientation.json");
   await (await wait).saveAs(path);
   await page.locator("#reset").click();
+  await expect(page.locator("#notice")).toContainText("Original demo sheet loaded");
   await page.locator("#recipe-file").setInputFiles(path);
   await expect(page.locator("#notice")).toContainText("Recipe restored");
   await page.locator("[data-tab=subject]").click();
