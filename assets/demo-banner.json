@@ -1,0 +1,17 @@
+﻿{
+    "format":  "version-banner-generator-v1",
+    "project":  "MY MODKIT",
+    "name":  "Ceruleanish Facet Prism",
+    "version":  "CONCEPT",
+    "palette":  "blue",
+    "accent":  "#8dc4ed",
+    "quoteStyle":  "french",
+    "caption":  "« Ceruleanish Facet Prism » edition",
+    "width":  1500,
+    "height":  500,
+    "image":  "demo-prism.png",
+    "imageSha256":  "1285f7116a59e7b24ba05f14a5f9bee9355ccca55e248b3054690d73b8fc3461",
+    "titleFont":  "Segoe UI Semibold",
+    "titleSize":  57,
+    "titleStyle":  "semibold italic"
+}
