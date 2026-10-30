@@ -196,6 +196,7 @@ export function initialState() {
       background: "#111b29",
       quote: "french",
       smooth: true,
+      removeBackground: true,
       scale: 1,
       x: 0,
       y: 0,
@@ -340,7 +341,8 @@ export function validateState(input) {
     num(v.rotation, -180, 180) &&
     typeof v.flip === "boolean";
   assert(
-    transform(b) && typeof b.smooth === "boolean",
+    transform(b) && typeof b.smooth === "boolean" &&
+      (b.removeBackground === undefined || typeof b.removeBackground === "boolean"),
     "Invalid subject transform.",
   );
   assert(

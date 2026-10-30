@@ -1,9 +1,22 @@
+import { removeFlatBackground } from "./background.mjs";
 import { caption, assert } from "./core.mjs";
 export function canvas(w, h) {
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
   return c;
+}
+const transparentSources = new WeakMap();
+function transparentSource(source) {
+  if (transparentSources.has(source)) return transparentSources.get(source);
+  const c = canvas(source.width, source.height), ctx = c.getContext("2d");
+  ctx.drawImage(source, 0, 0);
+  const pixels = ctx.getImageData(0, 0, c.width, c.height);
+  const removed = removeFlatBackground(pixels.data, c.width, c.height);
+  if (removed) ctx.putImageData(pixels, 0, 0);
+  const result = removed ? c : source;
+  transparentSources.set(source, result);
+  return result;
 }
 export async function loadFonts() {
   try {
@@ -31,6 +44,7 @@ export function drawSubject(
   transform,
   smooth = true,
   fit = 1,
+  removeBackground = false,
 ) {
   ctx.save();
   ctx.translate(cx + transform.x, cy + transform.y);
@@ -56,7 +70,7 @@ export function drawSubject(
     ctx.rotate((layer.rotation * Math.PI) / 180);
     ctx.scale(layer.flip ? -1 : 1, 1);
     ctx.drawImage(
-      source,
+      removeBackground ? transparentSource(source) : source,
       r.x,
       r.y,
       r.w,
@@ -128,6 +142,7 @@ export function renderBanner(target, state, images) {
     b,
     b.smooth,
     center ? 0.55 : 1,
+    b.removeBackground === true,
   );
   if (size < 28)
     warnings.push(

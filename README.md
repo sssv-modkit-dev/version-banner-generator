@@ -13,6 +13,9 @@ required. The examples are original geometric artwork.
 
 ## Banner Lab
 
+**[Open Banner Lab](https://sssv-modkit-dev.github.io/version-banner-generator/)**
+
+
 The browser lab starts in a light **Simple View**: open a PNG/JPEG, let it suggest
 sprite crops, pick a subject, edit your text/colour and download. Its two tabs are
 Create and Batch. **Advanced View** preserves your project and reveals exact crop
@@ -21,7 +24,9 @@ matched quotes, seeded randomization and single PNG or batch ZIP downloads.
 Recipes preserve settings and check the original images when reopened. Images stay
 on the visitor's device; the app has no uploads, analytics or external font calls.
 Detection handles transparent sheets and common flat/printed backgrounds, with
-manual corrections available. It suggests cuts without removing backgrounds.
+manual corrections available. Flat sprite backgrounds become transparent automatically;
+turn this off to keep the original. Rotate 90 degrees or flip horizontally/vertically
+in either view. Preview, PNG, batch exports and recipes retain these settings.
 
 Preview the implementation locally:
 
@@ -30,9 +35,8 @@ node tools/build-web.mjs
 python tools/serve-web.py
 ```
 
-Open <http://127.0.0.1:8765/>. For visitors, the intended distribution is GitHub
-Pages with no installation; the Pages workflow is prepared but has not yet been
-deployed. See [usage, checks and deployment](docs/BANNER-LAB.md) and the
+Open <http://127.0.0.1:8765/> for local development. The public Banner Lab runs on
+GitHub Pages with no installation. See [usage, checks and deployment](docs/BANNER-LAB.md) and the
 [implementation checklist](docs/PAGES-DEMO-PLAN.md).
 
 ## Give this to your coding bot

@@ -267,3 +267,42 @@ for (const file of privateFiles)
     const output = await wait;
     await output.saveAs(testInfo.outputPath("private-banner.png"));
   });
+
+
+test("automatic matte transparency, orientation and recipes agree with preview", async ({ page }, testInfo) => {
+  await open(page);
+  const renderPixels = () => page.evaluate(async () => {
+    const { canvas, drawSubject } = await import("./render.mjs");
+    const source = canvas(20, 20), ctx = source.getContext("2d");
+    ctx.fillStyle = "white"; ctx.fillRect(0, 0, 20, 20);
+    ctx.fillStyle = "red"; ctx.fillRect(5, 5, 10, 10);
+    const target = canvas(320, 320);
+    drawSubject(target.getContext("2d"), { layers: [{ sourceId: "s", rect: {x:0,y:0,w:20,h:20}, x:0,y:0,scale:1,rotation:0,flip:false,visible:true }] }, new Map([["s",source]]), 160,160,{x:0,y:0,scale:1,rotation:0,flip:false},false,1,true);
+    const pixels = target.getContext("2d").getImageData(0,0,320,320).data;
+    return [pixels[3], pixels[(160*320+160)*4+3]];
+  });
+  expect(await renderPixels()).toEqual([0,255]);
+  await expect(page.locator("#quick-remove-background")).toBeChecked();
+  await page.getByRole("button", { name: "Rotate 90°", exact: true }).locator("visible=true").click();
+  await page.getByRole("button", { name: "Flip vertical", exact: true }).locator("visible=true").click();
+  await page.locator("#quick-remove-background").uncheck();
+  await page.locator("#advanced-view").click();
+  await page.locator("[data-tab=subject]").click();
+  await expect(page.locator("#subject-rotation")).toHaveValue("90");
+  await expect(page.locator("#subject-flip")).toBeChecked();
+  await expect(page.locator("#remove-background")).not.toBeChecked();
+  await page.getByRole("button", { name: "Rotate 90°", exact: true }).locator("visible=true").click();
+  await expect(page.locator("#subject-rotation")).toHaveValue("-180");
+  await page.locator("#remove-background").check();
+  const wait = page.waitForEvent("download");
+  await page.locator("#save-recipe").click();
+  const path = testInfo.outputPath("orientation.json");
+  await (await wait).saveAs(path);
+  await page.locator("#reset").click();
+  await page.locator("#recipe-file").setInputFiles(path);
+  await expect(page.locator("#notice")).toContainText("Recipe restored");
+  await page.locator("[data-tab=subject]").click();
+  await expect(page.locator("#subject-rotation")).toHaveValue("-180");
+  await expect(page.locator("#subject-flip")).toBeChecked();
+  await expect(page.locator("#remove-background")).toBeChecked();
+});

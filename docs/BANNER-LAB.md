@@ -32,8 +32,11 @@ Uploads are analysed in a local Web Worker. The detector uses alpha for transpar
 atlases, estimates solid border mattes, and ignores pale printed grids/checkerboards
 when finding connected foreground regions. It groups overlapping details, filters
 small annotations and proposes integer crop rectangles in approximate reading order.
-Source pixels are never changed: opaque backgrounds and any captions inside a crop
-remain visible. It does not recognize characters, infer anatomy or perform OCR.
+Original files stay unchanged. Rendering automatically removes a dominant flat colour
+connected to the source image border, preserving enclosed matching colours. Disable
+Automatically remove sprite background to keep the original. Busy backgrounds and
+checkerboards may remain; this is not character recognition or OCR. Rotate 90 degrees
+and both flip buttons are available in Simple and Advanced View and saved in recipes.
 
 Suggestions can split detached effects, combine touching sprites or include stray
 artwork. An ambiguous image stays as one whole-image crop with an explanatory
@@ -130,9 +133,8 @@ ignored `build/`. Public CI does not set that variable and uses synthetic inputs
 
 The workflow `.github/workflows/banner-lab-pages.yml` runs checks for relevant
 pull requests. Deployment is manual, restricted to `main`, and uploads **only
-`site/dist`**. It does not publish on every push. The candidate URL is
-<https://sssv-modkit-dev.github.io/version-banner-generator/>; it is not a claim
-that this change is already deployed.
+`site/dist`**. It does not publish on every push. The public app is at
+<https://sssv-modkit-dev.github.io/version-banner-generator/>.
 
 For the first release:
 

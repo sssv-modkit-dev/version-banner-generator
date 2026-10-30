@@ -458,6 +458,8 @@ function syncBannerUI() {
   }))
     $(id).value = b[key];
   $("subject-flip").checked = b.flip;
+  for (const id of ["remove-background", "quick-remove-background"])
+    $(id).checked = b.removeBackground === true;
   $("smooth").checked = b.smooth;
   $("seed").value = state.random.seed;
   $("name-pool").value = state.random.names.join("\n");
@@ -523,6 +525,7 @@ function thumbnail(target, s, width = 128, height = 108) {
     neutral,
     state.banner.smooth,
     Math.min(width, height) / 400,
+    state.banner.removeBackground === true,
   );
 }
 function paintGallery() {
@@ -1499,6 +1502,27 @@ for (const [id, key] of Object.entries(bannerFields))
     if (key === "smooth") paintGallery();
     invalidateBatch();
   });
+for (const id of ["remove-background", "quick-remove-background"])
+  on(id, "change", (e) => {
+    state.banner.removeBackground = e.target.checked;
+    syncBannerUI();
+    paintGallery();
+    paint();
+    invalidateBatch();
+  });
+const normalizeAngle = angle => ((angle + 180) % 360 + 360) % 360 - 180;
+for (const button of document.querySelectorAll("[data-orient]"))
+  button.addEventListener("click", guard(() => {
+    const b = state.banner, action = button.dataset.orient;
+    if (action === "rotate") b.rotation = normalizeAngle(b.rotation + 90);
+    else {
+      b.rotation = normalizeAngle((action === "vertical" ? 180 : 0) - b.rotation);
+      b.flip = !b.flip;
+    }
+    syncBannerUI();
+    paint();
+    invalidateBatch();
+  }));
 on("reset-transform", "click", () => {
   Object.assign(state.banner, neutral);
   syncBannerUI();
