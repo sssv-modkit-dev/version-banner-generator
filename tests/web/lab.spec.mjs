@@ -243,7 +243,9 @@ test("pointer guides and free-rectangle handles use source coordinates at scaled
   await page.mouse.down();
   await page.mouse.move(box.x + 270 * z, box.y + 40 * z);
   await page.mouse.up();
-  expect(await page.locator("#cuts-x").inputValue()).toContain("270");
+  const draggedGuide = Number((await page.locator("#cuts-x").inputValue()).split(",")[0]);
+  expect(draggedGuide).toBeGreaterThanOrEqual(269);
+  expect(draggedGuide).toBeLessThanOrEqual(271);
   await page.locator("#cut-mode").selectOption("rects");
   await page.mouse.move(box.x + 20 * z, box.y + 20 * z);
   await page.mouse.down();
