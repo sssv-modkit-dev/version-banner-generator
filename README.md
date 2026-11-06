@@ -1,4 +1,10 @@
-# Version Banner Generator
+>[!WARNING]
+> ⚠ WARNING: this documentation was not hand-written and has been deemed as low-quality AI work. (Source: the person behind this repository)  
+> ⚠ WARNING: this banner generator was not hand-written and has been deemed as low-quality AI over-engineered feature-sprawled work. (Source: the person behind this repository)
+
+WORK IN PROGRESS
+
+# version-banner-generator
 
 ![Example release banner](assets/demo-banner.png)
 
