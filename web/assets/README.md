@@ -15,5 +15,4 @@
   MIT licence: `fflate-LICENSE.txt`. Used for streaming ZIP packaging.
 
 Downloaded 2026-10-30 with `tools/fetch-web-assets.py`. Normal builds and browser
-sessions do not download dependencies. Artifact SHA256 values are recorded by
-`tools/build-web.mjs` in `site/dist/artifact-manifest.json`.
+sessions do not download dependencies. `tools/build-web.mjs` records file SHA256 hashes in `site/dist/artifact-manifest.json`.

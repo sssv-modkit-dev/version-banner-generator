@@ -1,114 +1,82 @@
-# version-banner-generator
+# Version Banner Generator
 
-![Synthetic release-banner example](assets/demo-banner.png)
+![Example release banner](assets/demo-banner.png)
 
-Minimal release banners made from your own transparent renders: a dark background,
-palette-coloured italic edition title, matched quotation marks and a character image.
-Includes one-command PNG export, future-concept batches and a resolved JSON recipe.
+Make a 1500 × 500 banner from your own images. Add a title, choose colours,
+arrange the pictures, and download a PNG.
 
-**Current scope:** a browser Banner Lab for local PNG/JPEG sheets and a standalone
-Windows PowerShell/System.Drawing compositor. Both export 1500 x 500 banners.
-No AI generation, model renderer, game adapter or original modkit installation is
-required. The examples are original artwork.
+**[Open the banner editor](https://sssv-modkit-dev.github.io/version-banner-generator/)**
 
-## Banner Lab
+## How to use it
 
-**[Open Banner Lab](https://sssv-modkit-dev.github.io/version-banner-generator/)**
+1. Open the editor. Try the included artwork or choose a PNG or JPEG.
+2. Pick the sprite or image area you want to use. Adjust the cut if needed.
+3. Edit the text, colours and layout.
+4. Download your banner, or make several at once and download a ZIP.
 
+Your images stay on your device. Nothing is uploaded.
 
-The browser lab starts in a light **Simple View**: open a PNG/JPEG, let it suggest
-sprite crops, pick a subject, edit your text/colour and download. Its two tabs are
-Create and Batch. **Advanced View** preserves your project and reveals exact crop
-rectangles, draggable guides, layered parts assemblies, three layouts, palettes,
-matched quotes, seeded randomization and single PNG or batch ZIP downloads.
-Recipes preserve settings and check the original images when reopened. Images stay
-on the visitor's device; the app has no uploads, analytics or external font calls.
-Detection handles transparent sheets and common flat/printed backgrounds, with
-manual corrections available. Flat sprite backgrounds become transparent automatically;
-turn this off to keep the original. Rotate 90 degrees or flip horizontally/vertically
-in either view. Preview, PNG, batch exports and recipes retain these settings. The
-searchable picker shows 96 sprites at a time, with a Show all option. Combine
-several sprites as layers, download transparent cutouts, and style each text element
-independently while themes coordinate the defaults. The demo includes an original
-character sheet and animated, editable mashups; PNG exports are still images.
+Simple View has the basics. Advanced View lets you adjust exact cuts, combine
+several images, and change more text and layout settings. Switching views keeps
+your work. You can save settings to reopen later with the original images.
 
-Preview the implementation locally:
+The editor can suggest sprite cuts and remove some flat backgrounds. Check the
+result and adjust it when needed. Animated previews download as still PNGs.
 
-```text
+See the [help page](web/help.html) for all controls.
+
+## Run it locally
+
+You need Node 22+ and Python 3.12+. From the repository root:
+
+```sh
 node tools/build-web.mjs
 python tools/serve-web.py
 ```
 
-Open <http://127.0.0.1:8765/> for local development. The public Banner Lab runs on
-GitHub Pages with no installation. See [usage, checks and deployment](docs/BANNER-LAB.md) and the
-[implementation checklist](docs/PAGES-DEMO-PLAN.md).
+Open <http://127.0.0.1:8765/>.
 
-## Give this to your coding bot
+## Windows command-line tool
 
-[BOT-BRIEF.md](BOT-BRIEF.md) explains how to adapt the idea to a modding project,
-including verified head selections, camera presets and selective recolouring.
-It distinguishes the working compositor from future adapter integration.
-
-## Generate a banner
-
-Run from the repository root on Windows:
+There is also a separate PowerShell tool for making banners from transparent PNGs:
 
 ```powershell
 powershell -NoProfile -File tools/make-banner.ps1
 ```
 
-This writes `build/release-banner.png` and `build/release-banner.json`.
-Existing images or recipes are never silently overwritten. Use `-Out` for a new path.
+It uses the included demo image and saves `build/release-banner.png` plus a JSON
+file recording the settings. Choose another output path if the files already exist.
+
+To use your own image and text:
 
 ```powershell
-powershell -NoProfile -File tools/make-banner.ps1 -Project 'MY GAME MODKIT' -Name 'Jadeish Crown Raven' -Version 'v0.2.0' -Palette green -QuoteStyle french -ImagePath private/raven-head.png -Out build/raven-v0.2.png
-powershell -NoProfile -File tools/make-banner.ps1 -Batch -Out build/future-concepts
+powershell -NoProfile -File tools/make-banner.ps1 -Project 'MY GAME MODKIT' -Name 'Jadeish Crown Raven' -Version 'v0.2.0' -Palette green -ImagePath private/raven-head.png -Out build/raven-v0.2.png
 ```
 
-| Option | Meaning |
-| --- | --- |
-| `-Project` | Small project label |
-| `-Name` | Release name; quotation marks and `edition` are added automatically |
-| `-Version` | Secondary text; default `CONCEPT` |
-| `-Palette` | `blue`, `orange`, or `green` text/accent palette |
-| `-QuoteStyle` | `random` (default), `english`, `french`, `spanish`, `german`, or `japanese` |
-| `-ImagePath` | Local transparent PNG; defaults to the included original prism |
-| `-Out` | PNG path, or batch output directory |
-| `-Batch` | Three palette/name concepts labelled `FUTURE CONCEPT`; uses the selected image |
+Use `-Batch -Out build/concepts` to make three example banners. The available
+palettes are `blue`, `orange` and `green`; they change text and accents, not your
+image. Use `-QuoteStyle` to choose quotation marks. Long titles shrink to fit.
+Font differences between computers can change the result.
 
-Names and versions are plain text. Batch mode uses its example names rather than
-`-Name` or `-Version`. Palettes change text and accents, not image pixels. Random
-quote styles are recorded independently per output. Layout is fixed at 1500 x 500;
-long titles shrink to fit. Very long project/release names are rejected.
+The JSON file records the settings; the command-line tool cannot reopen it
+automatically yet.
 
-For the same typography across machines, use the same Windows fonts. Each recipe
-records the selected quote style, caption, palette, font, dimensions and input
-image SHA256. It contains only the input basename, not a private absolute path.
-To reproduce a banner, supply the recorded values and the same image/font setup;
-automatic CLI recipe replay is not implemented yet.
+## Development
 
-## Connect your game
+[Development guide](docs/BANNER-LAB.md) · [Adding game-specific rendering](docs/ADAPTERS.md)
 
-The compositor consumes a transparent PNG. A separate game adapter should render
-verified geometry with saved camera settings and perform material/part recolours
-before calling it. See [the adapter contract](docs/ADAPTERS.md). You can start with
-a cached render without pretending that arbitrary model rendering is automated.
+The tool takes images. Automatic rendering of game models is future work.
+Keep private images in `private/` or outside the repository.
 
-Keep private assets in `private/` or outside this repository. ROMs, extracted
-models, textures, private indexes and game-derived renders are not included.
-The software licence does not grant rights to game imagery.
-
-## Check it
+To check the Windows tool:
 
 ```powershell
 powershell -NoProfile -File tools/smoke-test.ps1
 ```
 
-The checks generate all quote styles and a batch, inspect PNG dimensions and JSON
-recipes, and confirm overwrite refusal. Visual checks remain separate. The original
-demo can be recreated with `examples/make-demo.ps1` when its PNG is absent.
+## License
 
-Original code, documentation and synthetic demos are dedicated under
-[CC0 1.0 Universal](LICENSE). Bundled fonts use SIL OFL 1.1 and fflate uses MIT;
-see [asset provenance and licences](web/assets/README.md).
-Third-party inputs retain their own terms.
+Original code, documentation and demo artwork use [CC0 1.0 Universal](LICENSE).
+Bundled fonts use SIL OFL 1.1 and fflate uses MIT; see
+[third-party credits](web/assets/README.md).
+Images you bring to the editor keep their own rights and licenses.
