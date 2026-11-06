@@ -1,12 +1,12 @@
 # Render-based release banners: brief for coding agents
 
-Build a reusable, mostly hands-off release-banner generator for my game-modding
-project. Inspect my repository, its working instructions, existing viewer and
+Build a release-banner generator for my game-modding project. Inspect my
+repository, its working instructions, existing viewer and
 asset tools before making changes. Preserve unrelated work.
 
 Use renders of actual game models rather than AI-generated approximations. Reuse
 the project's rendering code where practical. Begin with one verified character
-and a polished banner, then expand the preset library.
+and a finished banner, then expand the preset library.
 
 ## Visual direction
 
@@ -28,7 +28,7 @@ For animal-themed games, a possible naming system is **invented colour adjective
 names to my game's characters, locations or equipment. Keep version numbers
 separate and never invent a released version.
 
-## Hands-off workflow
+## Workflow
 
 1. Inspect available model parts and visually identify suitable heads or features.
    Save verified labels and flag uncertain selections. Do not infer anatomy solely
@@ -42,20 +42,15 @@ separate and never invent a released version.
 4. Support batches of future release concepts, clearly labelled as concepts.
 5. Recolour the character and/or named feature to match the palette, preserving
    shading and recognizable eyes, teeth and other details. Prefer material,
-   vertex-colour or geometric selections. Cached transparent renders can bootstrap
-   the workflow; asset-specific image masks are an explicitly limited fallback,
-   not a general anatomy detector. Never apply one game's masks to another game.
+   vertex-colour or geometric selections. Start with cached transparent renders
+   if needed. Image masks must be made and checked for each asset; they cannot
+   identify anatomy in other images.
 6. Preserve original assets and refuse silent overwrites. Record resolved random
    choices, input identity and render settings so a banner can be reproduced.
 7. Keep the implementation lightweight. Reuse the project's supported languages
    and avoid unnecessary dependencies or external services.
 
-Target workflow:
-
-**Choose release settings -> render a verified preset -> compose the banner ->
-export PNG plus its resolved settings.**
-
-## Architecture for a reusable repository
+## Components
 
 Separate the generic compositor from each game's adapter:
 
@@ -68,12 +63,12 @@ Separate the generic compositor from each game's adapter:
   asset-specific details retained privately where appropriate.
 
 Use one composition implementation for preview and automated export where
-practical. Allow an adapter to use cached renders, but describe that honestly;
-it is not equivalent to automatically rendering arbitrary game models.
+practical. An adapter may use cached renders. Document which inputs it supports
+and whether it can render new models.
 The standalone repository should not require the original modkit or bundle its
 game-derived inputs. Include a synthetic or independently authored example.
 
-## Verification and delivery
+## Checks and delivery
 
 - Inspect exported banners at README display size. Check title fit, italic weight,
   quote glyphs, transparency, cropping and contrast.
@@ -104,7 +99,6 @@ actual capabilities.
 
 ## Suggested post text
 
-We turned an actual in-game head render into a hands-off release-banner generator,
-with palette-matched recolours, playful edition names and quotation styles from
-different languages. I've attached a Markdown brief you can feed to your coding
-bot to adapt the idea to your own modding project and asset tools.
+I made a release-banner generator from a cached game-head render, with matching
+colours, edition names and a few quotation styles. The attached brief explains
+how a coding agent can adapt it to another modding project.

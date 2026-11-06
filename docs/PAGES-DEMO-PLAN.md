@@ -1,24 +1,22 @@
 # Banner Lab: GitHub Pages implementation plan
 
-Status: implemented, 2026-10-30. The sheet-to-batch app and manual Pages
+Implementation record, 2026-10-30. Status entries below describe that review;
+see [BANNER-LAB.md](BANNER-LAB.md) for current setup and release steps.
+
+Status at that review: implemented. The sheet-to-batch app and manual Pages
 workflow include default Simple View, automatic crop suggestions and mobile-first
 ordering. The app is published on GitHub Pages; later releases still use manual
 workflow dispatch. The current revision adds matte cleanup, dense browsing,
 independent element styles and animated sprite remixes.
 See [development and release notes](BANNER-LAB.md) for commands and limitations.
 
-## Outcome
+## Purpose
 
-Give visitors a useful banner-making tool directly on the project's GitHub Pages
-site. They can try an original demo sheet immediately, open their own parts or
+Let visitors make banners on the project's GitHub Pages site. They can try an
+original demo sheet, open their own parts or
 sprite sheets, define exact cuts with visible guides, choose styles or randomize
 settings, and download one banner or a batch. No clone, installation, account or
 modkit setup is needed.
-
-Target journey:
-
-**Try demo / open sheet -> adjust cuts -> select sprites or assemble parts ->
-style and preview -> download PNG or batch ZIP.**
 
 Use the same public-lab pattern as the
 [SSSV Parts Lab](https://sssv-modkit-dev.github.io/sssv-modkit/): independently
@@ -41,7 +39,7 @@ implementation adds sheet slicing, recipe replay and arbitrary batches.
 Browser output should preserve the design, but Windows and canvas typography
 must not be advertised as pixel-identical.
 
-## Product and implementation decisions
+## Design decisions
 
 - Build a static app using HTML, CSS, JavaScript modules and Canvas 2D. Start
   without a UI framework; isolate rendering and data logic from the controls.
@@ -66,11 +64,11 @@ must not be advertised as pixel-identical.
   licensed fonts, `tests/web/` for meaningful checks, and `site/dist/` for generated
   publishable files. Ignore generated output in Git.
 
-## Tasks and subtasks
+## Implementation checklist
 
 Checked tasks are implemented and locally verified. Cross-device visual QA and
-the public launch remain open; phase 8 remains follow-up work. Each phase ends
-in something that can be reviewed in a browser.
+the public launch remain open; phase 8 remains follow-up work. Review each phase
+in the browser.
 
 ### 1. Establish the browser foundation
 
@@ -147,7 +145,7 @@ can appear in the same banner workflow, with their transforms preserved on repla
   - Provide the three layout presets, original palettes, custom accent/background
     colours, project label, release name, version and pinned quote style.
   - Show text safe areas and warn about clipping, overlap or unreadably small text.
-- [x] **4.2 Add a deliberate randomizer.**
+- [x] **4.2 Add repeatable random choices.**
   - Let visitors choose eligible cells/assemblies, layouts, palettes, quote styles
     and optional editable name lists, then lock any individual setting.
   - Add a seed and explicit Shuffle action. Ordinary redraws must not reroll.
@@ -173,7 +171,7 @@ files and generator version produce the same resolved choices and composition.
     before export. Keep future concepts labelled separately from real releases.
   - Calculate the output count before rendering. Show thumbnails, estimated cost,
     unique filenames and any duplicate-combination warning.
-- [x] **5.3 Implement bounded batch downloads.**
+- [x] **5.3 Add batch downloads and size limits.**
   - Render sequentially or in a small bounded queue; show progress and Cancel.
     Freeze a settings snapshot so edits cannot change a running batch.
   - Package PNGs, per-banner recipes and a manifest in one ZIP using a reviewed,
@@ -268,11 +266,10 @@ without a checkout, installation or external account.
 | --- | --- | --- |
 | A: Browser composition | Phase 1 | Original subject -> editable preview -> PNG. |
 | B: Sheet workbench | Phases 2-3 | Exact grid/custom cuts -> sprites or assemblies. |
-| C: Production tools | Phases 4-5 | Styles -> locked randomization -> repeatable ZIP batch. |
+| C: Batch tools | Phases 4-5 | Styles -> locked randomization -> repeatable ZIP batch. |
 | D: Public release | Phases 6-7 | Verified app -> reviewed static artifact -> live Pages link. |
 
-Keep the first public release scoped to the complete sheet-to-batch workflow.
-Phase 8 can follow without delaying that outcome.
+Keep phase 8 separate from the first release.
 
 ## References
 

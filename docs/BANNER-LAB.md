@@ -1,7 +1,7 @@
 # Banner Lab development and release
 
-The browser app implements the sheet-to-batch workflow in `web/`. It runs entirely
-in the visitor's browser; normal use needs no installation or account. Local
+The browser app lives in `web/` and runs in the visitor's browser. It needs no
+installation or account. Local
 development requires Node 22+ and Python 3.12+. Runtime dependencies and fonts are
 bundled in `web/assets/`, with licences and provenance alongside them.
 
@@ -12,7 +12,7 @@ node tools/build-web.mjs
 python tools/serve-web.py
 ```
 
-Open <http://127.0.0.1:8765/>. The dedicated preview server supplies explicit
+Open <http://127.0.0.1:8765/>. The preview server supplies explicit
 JavaScript MIME types, including on Windows. Stop it with Ctrl+C.
 
 1. Simple View opens by default with two tabs: Create and Batch.
@@ -52,7 +52,7 @@ remain static PNGs. User imports hide the demo and are never used in public exam
 
 ## Automatic detection
 
-Uploads are analysed in a local Web Worker. The detector uses alpha for transparent
+Imported images are analysed in a local Web Worker. The detector uses alpha for transparent
 atlases, estimates solid border mattes, and ignores pale printed grids/checkerboards
 when finding connected foreground regions. It groups overlapping details, filters
 small annotations and proposes integer crop rectangles in approximate reading order.
@@ -65,8 +65,7 @@ and both flip buttons are available in Simple and Advanced View and saved in rec
 Suggestions can split detached effects, combine touching sprites or include stray
 artwork. An ambiguous image stays as one whole-image crop with an explanatory
 message. Use Find sprites again to repeat detection, or Adjust cuts to refine
-rectangles, grid spacing or custom guides in Advanced View. Detection is an initial
-suggestion, not a guarantee of a correct cell for every frame. Small transparent
+rectangles, grid spacing or custom guides in Advanced View. Check the suggested crops before exporting. Small transparent
 pixel-art atlases default to crisp sampling; Advanced View can override smoothing.
 
 Only the first user image replaces the demo artwork; later imports add sheets.
@@ -112,12 +111,12 @@ The existing PowerShell smoke test remains independent:
 powershell -NoProfile -File tools/smoke-test.ps1
 ```
 
-## Data and module boundaries
+## Code and file formats
 
 - `core.mjs`: format/version, limits, PNG header checks, slicing, alpha bounds,
   deterministic choices, batch planning and recipe validation. No DOM dependency.
 - `render.mjs`: font readiness, subject layers and one shared 1500 x 500 renderer
-  for live preview and exports. No PowerShell font/layout parity claim.
+  for live preview and exports. Fonts and layout may differ from PowerShell output.
 - `app.mjs`: local image lifecycle, sheet draft/apply/undo, controls, gallery,
   source hash reconciliation, batch preview and sequential ZIP production.
 - `detect.mjs` and `detect-worker.mjs`: bounded background-aware region suggestions,
