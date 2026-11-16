@@ -105,10 +105,10 @@ A prior complete 100-banner Chromium measurement produced an 8,195,750-byte ZIP
 with 201 entries. This measures the geometric demo, not worst-case inputs.
 Physical touch hardware, Safari and the live Pages origin remain unverified.
 
-The existing PowerShell smoke test remains independent:
+The existing Python smoke test remains independent:
 
-```powershell
-powershell -NoProfile -File tools/smoke-test.ps1
+```sh
+python tools/smoke-test.py
 ```
 
 ## Code and file formats
@@ -116,7 +116,7 @@ powershell -NoProfile -File tools/smoke-test.ps1
 - `core.mjs`: format/version, limits, PNG header checks, slicing, alpha bounds,
   deterministic choices, batch planning and recipe validation. No DOM dependency.
 - `render.mjs`: font readiness, subject layers and one shared 1500 x 500 renderer
-  for live preview and exports. Fonts and layout may differ from PowerShell output.
+  for live preview and exports. Fonts and layout may differ from CLI output.
 - `app.mjs`: local image lifecycle, sheet draft/apply/undo, controls, gallery,
   source hash reconciliation, batch preview and sequential ZIP production.
 - `detect.mjs` and `detect-worker.mjs`: bounded background-aware region suggestions,

@@ -27,14 +27,14 @@ inputs, and deployment of a dedicated static output directory.
 
 | Existing work | Use in the lab |
 | --- | --- |
-| `tools/make-banner.ps1` | Reference layout: 1500 x 500, dark background, italic edition title, project/version labels, subject placement and restrained accent lines. |
+| `tools/make-banner.py` | Reference layout: 1500 x 500, dark background, italic edition title, project/version labels, subject placement and restrained accent lines. |
 | Three palettes and five matched quote conventions | Initial presets; keep random quote choices stable while editing. |
 | PNG plus resolved JSON output | Basis for downloadable browser recipes and reproducible batches. |
-| `assets/demo-prism.png` and `examples/make-demo.ps1` | Original demo subject and a reference composition. Add an original sheet with several cells. |
+| `assets/demo-prism.png` and `examples/make-demo.py` | Original demo subject and a reference composition. Add an original sheet with several cells. |
 | `docs/ADAPTERS.md` | Preserve the generic image-input boundary; game-specific rendering remains separate. |
-| `tools/smoke-test.ps1` | Retain CLI checks independently of new browser verification. |
+| `tools/smoke-test.py` | Retain CLI checks independently of new browser verification. |
 
-The CLI compositor uses PowerShell/System.Drawing and accepts one PNG. The browser
+The CLI compositor uses Python and a local Chromium browser and accepts one or more PNGs. The browser
 implementation adds sheet slicing, recipe replay and arbitrary batches.
 Browser output should preserve the design, but Windows and canvas typography
 must not be advertised as pixel-identical.
@@ -274,7 +274,7 @@ Keep phase 8 separate from the first release.
 ## References
 
 - Local baseline: `README.md`, `BOT-BRIEF.md`, `docs/ADAPTERS.md`,
-  `tools/make-banner.ps1` and `assets/demo-banner.json`.
+  `tools/make-banner.py` and `assets/demo-banner.json`.
 - Modkit pattern inspected locally: `D:/LLM/sssv-modkit/site/README.md` and
   `.github/workflows/parts-lab-pages.yml`; these are references, not build inputs.
 - GitHub: [Configure a Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
