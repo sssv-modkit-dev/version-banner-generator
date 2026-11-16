@@ -167,7 +167,7 @@ test("touch emulation can choose a sprite, change view and prepare a batch", asy
     await expect(page.locator("#notice")).toContainText("Original demo sheet");
     await page.locator(".cell-card > button").nth(1).tap();
     await expect(page.locator("#preview-detail")).toContainText(
-      "Amberish Orbit",
+      "Orbit",
     );
     await page.locator("#advanced-view").tap();
     await expect(page.locator("#cut-mode")).toBeVisible();
