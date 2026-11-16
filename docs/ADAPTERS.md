@@ -24,5 +24,5 @@ browser rendering and game validation as separate evidence. For browser tests,
 follow the project's documented localhost setup and respect access restrictions.
 
 The compositor currently has no dynamic adapter loader. A small wrapper can render
-the PNG, then invoke `tools/make-banner.ps1` with explicit arguments. Add a plugin
+the PNG, then invoke `tools/make-banner.py` with explicit arguments. Add a plugin
 system only when integrations need it.

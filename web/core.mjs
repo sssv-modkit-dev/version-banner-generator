@@ -189,7 +189,7 @@ export function initialState() {
     activeSubjectId: "",
     banner: {
       project: "MY MODKIT",
-      name: "Ceruleanish Facet Prism",
+      name: "Prism",
       version: "CONCEPT",
       layout: "right",
       palette: "blue",

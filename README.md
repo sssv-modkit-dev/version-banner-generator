@@ -42,27 +42,27 @@ python tools/serve-web.py
 
 Open <http://127.0.0.1:8765/>.
 
-## Windows command-line tool
+## Cross-platform command-line tool
 
-There is also a separate PowerShell tool for making banners from transparent PNGs:
+There is also a Python command-line tool for making banners from transparent PNGs:
 
-```powershell
-powershell -NoProfile -File tools/make-banner.ps1
+```sh
+python tools/make-banner.py
 ```
 
-It uses the included demo image and saves `build/release-banner.png` plus a JSON
+It requires Python 3.8+ and a local Chrome, Chromium or Edge browser. It uses the included demo image and saves `build/release-banner.png` plus a JSON
 file recording the settings. Choose another output path if the files already exist.
 
 To use your own image and text:
 
-```powershell
-powershell -NoProfile -File tools/make-banner.ps1 -Project 'MY GAME MODKIT' -Name 'Jadeish Crown Raven' -Version 'v0.2.0' -Palette green -ImagePath private/raven-head.png -Out build/raven-v0.2.png
+```sh
+python tools/make-banner.py --project 'MY GAME MODKIT' --name 'Raven' --version 'v0.2.0' --palette green --image-path private/raven-head.png --out build/raven-v0.2.png
 ```
 
-Use `-Batch -Out build/concepts` to make three example banners. The available
+Use `--batch --out build/concepts` to make three example banners. The available
 palettes are `blue`, `orange` and `green`; they change text and accents, not your
-image. Use `-QuoteStyle` to choose quotation marks. Long titles shrink to fit.
-Font differences between computers can change the result.
+image. Use `--quote-style` to choose quotation marks. Long titles shrink to fit.
+Font differences between computers can change the result. Repeat `--image-path` to place multiple subjects in a teamup banner. Use `--browser PATH` when browser discovery needs help.
 
 The JSON file records the settings; the command-line tool cannot reopen it
 automatically yet.
@@ -74,10 +74,10 @@ automatically yet.
 The tool takes images. Automatic rendering of game models is future work.
 Keep private images in `private/` or outside the repository.
 
-To check the Windows tool:
+To check the portable tool:
 
-```powershell
-powershell -NoProfile -File tools/smoke-test.ps1
+```sh
+python tools/smoke-test.py
 ```
 
 ## License

@@ -1060,7 +1060,7 @@ async function addFile(file) {
     state.subjects = [];
     state.activeSubjectId = "";
     demoOnly = false;
-    if (state.banner.name === "Ceruleanish Facet Prism")
+    if (state.banner.name === "Prism")
       state.banner.name = "My release";
   }
   images.set(id, image);
@@ -1185,9 +1185,9 @@ async function demo() {
   selectSource(id);
   await applyCuts(false);
   const labels = [
-    "Ceruleanish Facet Prism",
-    "Amberish Orbit",
-    "Jadeish Crown",
+    "Prism",
+    "Orbit",
+    "Crown",
     "Rose Arc",
     "Glacier Spark",
     "Violet Bloom",
