@@ -1,41 +1,167 @@
 {
   "format": "version-banner-themes-v1",
-  "about": "Each theme: background, one or two main colours, a few accents and one contrast colour from the opposite side of the wheel. Text colours derive from these unless set.",
+  "about": "Each theme: background, one or two main colours, a few accents and one contrast colour from the opposite side of the wheel. Text colours derive from these unless set. Optional 'tags' (e.g. bold) let a spec pick with theme 'random:<tag>'.",
   "themes": {
     "midnight-cobalt": {
       "background": "#0f1524",
-      "main": ["#3d7bf0", "#1d2f5c"],
-      "accents": ["#ff9f43", "#ffd56b", "#5ee6c8"],
+      "main": [
+        "#3d7bf0",
+        "#1d2f5c"
+      ],
+      "accents": [
+        "#ff9f43",
+        "#ffd56b",
+        "#5ee6c8"
+      ],
       "contrast": "#ff9f43",
-      "text": {"project": "#c8d8ff", "accent": "#ffb35c", "muted": "#9fb2d6", "subtitle": "#8494b4"}
+      "text": {
+        "project": "#c8d8ff",
+        "accent": "#ffb35c",
+        "muted": "#9fb2d6",
+        "subtitle": "#8494b4"
+      }
     },
     "plum-citrus": {
       "background": "#170f22",
-      "main": ["#8e5cf0", "#3a2366"],
-      "accents": ["#c6f25a", "#ff6fb5", "#ffd166"],
+      "main": [
+        "#8e5cf0",
+        "#3a2366"
+      ],
+      "accents": [
+        "#c6f25a",
+        "#ff6fb5",
+        "#ffd166"
+      ],
       "contrast": "#c6f25a",
-      "text": {"project": "#e2d4ff", "accent": "#c6f25a", "muted": "#b5a5d6", "subtitle": "#8f84a8"}
+      "text": {
+        "project": "#e2d4ff",
+        "accent": "#c6f25a",
+        "muted": "#b5a5d6",
+        "subtitle": "#8f84a8"
+      }
     },
     "teal-coral": {
       "background": "#0d1d20",
-      "main": ["#1fb5a8", "#145c58"],
-      "accents": ["#ff6f61", "#ffd3b5", "#f2c14e"],
+      "main": [
+        "#1fb5a8",
+        "#145c58"
+      ],
+      "accents": [
+        "#ff6f61",
+        "#ffd3b5",
+        "#f2c14e"
+      ],
       "contrast": "#ff6f61",
-      "text": {"project": "#c9f2ec", "accent": "#ff8476", "muted": "#9cc7c1", "subtitle": "#7fa29d"}
+      "text": {
+        "project": "#c9f2ec",
+        "accent": "#ff8476",
+        "muted": "#9cc7c1",
+        "subtitle": "#7fa29d"
+      }
     },
     "crimson-ice": {
       "background": "#1a0f13",
-      "main": ["#e0475b", "#5c1d29"],
-      "accents": ["#7fd8ff", "#f4f1de", "#ffb703"],
+      "main": [
+        "#e0475b",
+        "#5c1d29"
+      ],
+      "accents": [
+        "#7fd8ff",
+        "#f4f1de",
+        "#ffb703"
+      ],
       "contrast": "#7fd8ff",
-      "text": {"project": "#ffd6dc", "accent": "#7fd8ff", "muted": "#d3a6ad", "subtitle": "#a8868b"}
+      "text": {
+        "project": "#ffd6dc",
+        "accent": "#7fd8ff",
+        "muted": "#d3a6ad",
+        "subtitle": "#a8868b"
+      }
     },
     "forest-gold": {
       "background": "#0e1a14",
-      "main": ["#3fae6a", "#1b4d33"],
-      "accents": ["#ffc94d", "#e86a92", "#b8f2e6"],
+      "main": [
+        "#3fae6a",
+        "#1b4d33"
+      ],
+      "accents": [
+        "#ffc94d",
+        "#e86a92",
+        "#b8f2e6"
+      ],
       "contrast": "#e86a92",
-      "text": {"project": "#d3f5df", "accent": "#ffc94d", "muted": "#a3c7b1", "subtitle": "#84a391"}
+      "text": {
+        "project": "#d3f5df",
+        "accent": "#ffc94d",
+        "muted": "#a3c7b1",
+        "subtitle": "#84a391"
+      }
+    },
+    "neon-magenta": {
+      "tags": [
+        "bold"
+      ],
+      "background": "#0c0a1c",
+      "main": [
+        "#ff2e88",
+        "#3d0d33"
+      ],
+      "accents": [
+        "#00e5ff",
+        "#ffe600",
+        "#7c4dff"
+      ],
+      "contrast": "#00e5ff",
+      "text": {
+        "project": "#00e5ff",
+        "accent": "#ff2e88",
+        "muted": "#a99cff",
+        "subtitle": "#8a86b8"
+      }
+    },
+    "cobalt-blaze": {
+      "tags": [
+        "bold"
+      ],
+      "background": "#070f26",
+      "main": [
+        "#2962ff",
+        "#0d1f5c"
+      ],
+      "accents": [
+        "#ff6d00",
+        "#ffd600",
+        "#00e676"
+      ],
+      "contrast": "#ff6d00",
+      "text": {
+        "project": "#82b1ff",
+        "accent": "#ff6d00",
+        "muted": "#8fa8ff",
+        "subtitle": "#7d8cb8"
+      }
+    },
+    "jade-volt": {
+      "tags": [
+        "bold"
+      ],
+      "background": "#06171a",
+      "main": [
+        "#00c896",
+        "#0a3d36"
+      ],
+      "accents": [
+        "#ff3d71",
+        "#ffe14d",
+        "#3d8bff"
+      ],
+      "contrast": "#ff3d71",
+      "text": {
+        "project": "#5ef2c8",
+        "accent": "#ff3d71",
+        "muted": "#7fd8c0",
+        "subtitle": "#6fa39a"
+      }
     }
   }
 }

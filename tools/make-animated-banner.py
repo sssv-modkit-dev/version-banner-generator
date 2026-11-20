@@ -26,7 +26,7 @@ def static_page(text, theme):
     return """<!doctype html><meta charset="utf-8"><style>html,body{margin:0;width:1500px;height:500px;overflow:hidden}canvas{display:block}</style><canvas width="1500" height="500"></canvas><script>
 const {t,th}=PAYLOAD,c=document.querySelector('canvas'),x=c.getContext('2d');
 document.fonts.ready.then(()=>{x.fillStyle=th.background;x.fillRect(0,0,1500,500);
-const L=t.layout==='center',cx=750,max=L?t.width:890,left=L?cx-max/2:70,ys=L?t.rows:{bar:76,project:115,title:[255],version:335,rule:382};
+const L=t.layout==='center',cx=750,max=L?t.width:890,left=L?cx-max/2:70,ys=t.rows||(L?{bar:64,project:104,title:[214,282],version:336,rule:378}:{bar:76,project:115,title:[255,320],version:335,rule:382});
 const put=(txt,y,font,colour)=>{x.font=font;x.fillStyle=colour;const w=x.measureText(txt).width;x.fillText(txt,L?cx-w/2:left,y)};
 x.fillStyle=t.accent;x.fillRect(L?cx-16:left,ys.bar,32,3);
 put(t.project,ys.project,'600 21px system-ui',t.project_colour);
@@ -104,7 +104,7 @@ def main():
                 accent=fx.tone(theme, 'text.accent'), project_colour=fx.tone(theme, 'text.project'),
                 subtitle_colour=fx.tone(theme, 'text.subtitle'),
                 lines=title_lines(spec, theme, quotes), layout=spec.get('layout', 'left'), version_size=spec.get('version_size', 21),
-                width=spec.get('text_width', 700), rows=spec.get('rows') or {'bar': 64, 'project': 104, 'title': [214, 282], 'version': 336, 'rule': 378})
+                width=spec.get('text_width', 700), rows=spec.get('rows'))
     static = render_static(text, theme, mb.find_browser(a.browser))
     for sp in spec.get('spotlights', []):
         if 'colour' in sp:

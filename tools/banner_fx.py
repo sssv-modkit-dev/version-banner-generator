@@ -28,6 +28,11 @@ def load_theme(name, rng):
     themes = json.loads(THEMES_PATH.read_text(encoding='utf-8'))['themes']
     if name == 'random':
         name = rng.choice(sorted(themes))
+    elif name.startswith('random:'):
+        pool = sorted(k for k, v in themes.items() if name[7:] in v.get('tags', []))
+        if not pool:
+            raise ValueError('No theme tagged %r' % name[7:])
+        name = rng.choice(pool)
     if name not in themes:
         raise ValueError('Unknown theme %r; choose one of: %s' % (name, ', '.join(sorted(themes))))
     return name, themes[name]
@@ -82,6 +87,14 @@ def _shape(draw, kind, box, colour, s):
 
 # Slots keep shapes on the edges, clear of the text block (x 60-970, y 60-400).
 BORDER_PRESETS = {
+    # Solid shapes only: no dot grids or stripes.
+    'bold': [
+        ('top-left', [('triangle-tl', (0, 0, 130, 130))]),
+        ('top-right', [('triangle-tr', (1370, 0, 1500, 130)), ('circle', (1420, -80, 1580, 80))]),
+        ('bottom-left', [('circle', (-90, 410, 110, 610)), ('triangle', (0, 380, 120, 500))]),
+        ('bottom-right', [('triangle', (1380, 380, 1500, 500)), ('ring', (1410, 420, 1570, 580))]),
+        ('left-edge', [('bar', (0, 160, 10, 340))]),
+    ],
     'modern': [
         ('top-left', [('triangle-tl', (0, 0, 120, 120)), ('dots', (16, 16, 70, 52))]),
         ('top-right', [('triangle-tr', (1380, 0, 1500, 120)), ('ring', (1430, -40, 1530, 60)), ('dots', (1420, 16, 1484, 52))]),
