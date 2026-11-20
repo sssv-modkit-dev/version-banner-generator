@@ -33,7 +33,7 @@ put(t.project,ys.project,'600 21px system-ui',t.project_colour);
 t.lines.forEach((line,n)=>{let size=line.size,w;const f=(s,sz)=>`italic ${s.weight||600} ${sz}px system-ui`;
  do{w=line.segments.reduce((a,s)=>{x.font=f(s,size);return a+x.measureText(s.text).width},0);if(w<=max)break;size--}while(size>14);
  let px=L?cx-w/2:left;for(const s of line.segments){x.font=f(s,size);x.fillStyle=s.colour;x.fillText(s.text,px,ys.title[n]);px+=x.measureText(s.text).width}});
-put(t.version,ys.version,'400 21px system-ui',t.subtitle_colour);
+put(t.version,ys.version,`400 ${t.version_size}px system-ui`,t.subtitle_colour);
 x.fillStyle=th.main[1];x.fillRect(L?cx-max/2:left,ys.rule,max,1);x.fillStyle=t.accent;x.fillRect(L?cx-32:left,ys.rule,64,2);
 document.documentElement.dataset.bannerStatus='ready';}).catch(()=>document.documentElement.dataset.bannerStatus='failed');</script>""".replace('PAYLOAD', payload)
 
@@ -103,7 +103,7 @@ def main():
     text = dict(project=spec.get('project', 'MY MODKIT'), version=spec.get('version', 'CONCEPT'),
                 accent=fx.tone(theme, 'text.accent'), project_colour=fx.tone(theme, 'text.project'),
                 subtitle_colour=fx.tone(theme, 'text.subtitle'),
-                lines=title_lines(spec, theme, quotes), layout=spec.get('layout', 'left'),
+                lines=title_lines(spec, theme, quotes), layout=spec.get('layout', 'left'), version_size=spec.get('version_size', 21),
                 width=spec.get('text_width', 700), rows=spec.get('rows') or {'bar': 64, 'project': 104, 'title': [214, 282], 'version': 336, 'rule': 378})
     static = render_static(text, theme, mb.find_browser(a.browser))
     for sp in spec.get('spotlights', []):
