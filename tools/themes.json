@@ -162,6 +162,28 @@
         "muted": "#7fd8c0",
         "subtitle": "#6fa39a"
       }
+    },
+    "n64-dark": {
+      "tags": [
+        "retro"
+      ],
+      "background": "#0e121b",
+      "main": [
+        "#2f5fc4",
+        "#18264a"
+      ],
+      "accents": [
+        "#d7282f",
+        "#f5b400",
+        "#1f9e4a"
+      ],
+      "contrast": "#f5b400",
+      "text": {
+        "project": "#a3adc2",
+        "accent": "#f5b400",
+        "muted": "#a3adc2",
+        "subtitle": "#7c869b"
+      }
     }
   }
 }

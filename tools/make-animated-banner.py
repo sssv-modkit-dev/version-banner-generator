@@ -101,7 +101,7 @@ def main():
     for s in spec['subjects']:
         s['image'] = str((base / s['image']).resolve())
     text = dict(project=spec.get('project', 'MY MODKIT'), version=spec.get('version', 'CONCEPT'),
-                accent=fx.tone(theme, 'text.accent'), project_colour=fx.tone(theme, 'text.project'),
+                accent=fx.tone(theme, 'text.accent'), project_colour=fx.tone(theme, spec.get('project_tone', 'text.project')),
                 subtitle_colour=fx.tone(theme, 'text.subtitle'),
                 lines=title_lines(spec, theme, quotes), layout=spec.get('layout', 'left'), version_size=spec.get('version_size', 21),
                 width=spec.get('text_width', 700), rows=spec.get('rows'))

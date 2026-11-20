@@ -16,6 +16,7 @@ local Chrome, Chromium or Edge (the text is drawn by the browser, like the stati
 | Key | Meaning |
 |---|---|
 | `project`, `version`, `version_size` | Small top line, version line and its font size (default 21). `rows` sets the y of `bar`, `project`, `title` lines, `rule` and `version`, so the version can sit under the rule. |
+| `project_tone` | Colour of the top line (default `text.project`; e.g. `text.muted` to match the subdued title part). |
 | `theme` | A name from `tools/themes.json`, `random`, or `random:<tag>` (e.g. `random:bold` for saturated themes). |
 | `quote_style` | `english`, `french`, `spanish`, `german`, `japanese` or `random`. |
 | `seed` | Fixes every random choice (theme, quotes, border shapes, palette timing). `--seed` overrides it. |
